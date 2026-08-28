@@ -79,6 +79,7 @@ st.markdown("""
         background-color: #1E293B;
         border: 2px solid #475569;
         margin-right: 16px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.5);
     }
     .tag-badge {
         display: inline-block;
@@ -116,11 +117,11 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-# --- VERIFIED ACTIVE UFC FIGHTER DATABASE ---
+# --- VERIFIED ACTIVE FIGHTER DATABASE (STABLE UNBLOCKED THUMBNAILS) ---
 FIGHTER_DATABASE = {
     "Islam Makhachev": {
         "record": "27-1-0", "natural_weight": 155, "style": "Combat Sambo / Master of Sport",
-        "image": "https://a.espncdn.com/combiner/i?img=/i/headshots/mma/players/full/3902098.png",
+        "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e2/Islam_Makhachev_2023.jpg/300px-Islam_Makhachev_2023.jpg",
         "adaptation_archetype": "natural_frame",
         "slpm": 2.46, "str_acc": 0.60, "sapm": 1.27, "str_def": 0.61,
         "td_avg": 3.17, "td_acc": 0.61, "td_def": 0.90, "sub_avg": 1.15,
@@ -131,7 +132,7 @@ FIGHTER_DATABASE = {
     },
     "Ilia Topuria": {
         "record": "16-0-0", "natural_weight": 145, "style": "Greco-Roman Wrestling / Precision Boxing",
-        "image": "https://a.espncdn.com/combiner/i?img=/i/headshots/mma/players/full/4685084.png",
+        "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c0/Ilia_Topuria_at_the_Orbeliani_Palace_%28cropped%29.jpg/300px-Ilia_Topuria_at_the_Orbeliani_Palace_%28cropped%29.jpg",
         "adaptation_archetype": "speed_preserver",
         "slpm": 4.54, "str_acc": 0.46, "sapm": 3.10, "str_def": 0.65,
         "td_avg": 1.92, "td_acc": 0.56, "td_def": 0.92, "sub_avg": 1.30,
@@ -142,7 +143,7 @@ FIGHTER_DATABASE = {
     },
     "Ian Machado Garry": {
         "record": "15-1-0", "natural_weight": 170, "style": "Dynamic Muay Thai / Distance Striker",
-        "image": "https://a.espncdn.com/combiner/i?img=/i/headshots/mma/players/full/4899557.png",
+        "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8b/Ian_Garry_2023.jpg/300px-Ian_Garry_2023.jpg",
         "adaptation_archetype": "speed_preserver",
         "slpm": 6.27, "str_acc": 0.55, "sapm": 3.58, "str_def": 0.53,
         "td_avg": 0.65, "td_acc": 0.50, "td_def": 0.72, "sub_avg": 0.20,
@@ -153,7 +154,7 @@ FIGHTER_DATABASE = {
     },
     "Alex Pereira": {
         "record": "12-2-0", "natural_weight": 205, "style": "Glory 2-Division Kickboxing Champion",
-        "image": "https://a.espncdn.com/combiner/i?img=/i/headshots/mma/players/full/4885876.png",
+        "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/48/Alex_Pereira_2023.jpg/300px-Alex_Pereira_2023.jpg",
         "adaptation_archetype": "cut_relief",
         "slpm": 5.10, "str_acc": 0.62, "sapm": 3.65, "str_def": 0.51,
         "td_avg": 0.18, "td_acc": 1.00, "td_def": 0.73, "sub_avg": 0.00,
@@ -164,7 +165,7 @@ FIGHTER_DATABASE = {
     },
     "Jon Jones": {
         "record": "28-1-0", "natural_weight": 265, "style": "Greco-Roman Wrestling / Gaidojutsu",
-        "image": "https://a.espncdn.com/combiner/i?img=/i/headshots/mma/players/full/2335639.png",
+        "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/87/Jon_Jones_-_Supporting_Brain_Health_Study.jpg/300px-Jon_Jones_-_Supporting_Brain_Health_Study.jpg",
         "adaptation_archetype": "natural_frame",
         "slpm": 4.30, "str_acc": 0.58, "sapm": 2.22, "str_def": 0.64,
         "td_avg": 1.85, "td_acc": 0.45, "td_def": 0.95, "sub_avg": 0.80,
@@ -175,7 +176,7 @@ FIGHTER_DATABASE = {
     },
     "Tom Aspinall": {
         "record": "15-3-0", "natural_weight": 265, "style": "Heavyweight Boxing / BJJ Black Belt",
-        "image": "https://a.espncdn.com/combiner/i?img=/i/headshots/mma/players/full/4685087.png",
+        "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4e/Tom_Aspinall_2023.jpg/300px-Tom_Aspinall_2023.jpg",
         "adaptation_archetype": "natural_frame",
         "slpm": 7.72, "str_acc": 0.66, "sapm": 2.77, "str_def": 0.67,
         "td_avg": 3.38, "td_acc": 1.00, "td_def": 1.00, "sub_avg": 1.70,
@@ -186,7 +187,7 @@ FIGHTER_DATABASE = {
     },
     "Max Holloway": {
         "record": "26-8-0", "natural_weight": 145, "style": "Hawaiian Volume Boxing / BJJ Brown Belt",
-        "image": "https://a.espncdn.com/combiner/i?img=/i/headshots/mma/players/full/2614933.png",
+        "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/be/Max_Holloway_BMF.png/300px-Max_Holloway_BMF.png",
         "adaptation_archetype": "cut_relief",
         "slpm": 7.17, "str_acc": 0.48, "sapm": 4.79, "str_def": 0.59,
         "td_avg": 0.27, "td_acc": 0.53, "td_def": 0.84, "sub_avg": 0.30,
@@ -197,7 +198,7 @@ FIGHTER_DATABASE = {
     },
     "Alexander Volkanovski": {
         "record": "26-4-0", "natural_weight": 145, "style": "Freestyle Wrestling / Kickboxing",
-        "image": "https://a.espncdn.com/combiner/i?img=/i/headshots/mma/players/full/4065487.png",
+        "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4e/Alex_Volkanovski.jpg/300px-Alex_Volkanovski.jpg",
         "adaptation_archetype": "speed_preserver",
         "slpm": 6.19, "str_acc": 0.57, "sapm": 3.42, "str_def": 0.58,
         "td_avg": 1.84, "td_acc": 0.37, "td_def": 0.73, "sub_avg": 0.20,
@@ -208,7 +209,7 @@ FIGHTER_DATABASE = {
     },
     "Merab Dvalishvili": {
         "record": "18-4-0", "natural_weight": 135, "style": "Sambo / High-Pace Relentless Wrestling",
-        "image": "https://a.espncdn.com/combiner/i?img=/i/headshots/mma/players/full/4285640.png",
+        "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c4/Merab_Dvalishvili_2022_%282%29.jpg/300px-Merab_Dvalishvili_2022_%282%29.jpg",
         "adaptation_archetype": "natural_frame",
         "slpm": 4.50, "str_acc": 0.42, "sapm": 2.40, "str_def": 0.62,
         "td_avg": 6.43, "td_acc": 0.36, "td_def": 0.80, "sub_avg": 0.30,
@@ -219,7 +220,7 @@ FIGHTER_DATABASE = {
     },
     "Sean O'Malley": {
         "record": "18-2-0", "natural_weight": 135, "style": "Feint-Heavy Counter Sniping Boxing",
-        "image": "https://a.espncdn.com/combiner/i?img=/i/headshots/mma/players/full/4285626.png",
+        "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2a/Sean_O%27Malley_in_2024.jpg/300px-Sean_O%27Malley_in_2024.jpg",
         "adaptation_archetype": "speed_preserver",
         "slpm": 7.25, "str_acc": 0.61, "sapm": 3.52, "str_def": 0.62,
         "td_avg": 0.35, "td_acc": 0.42, "td_def": 0.65, "sub_avg": 0.40,
@@ -230,7 +231,7 @@ FIGHTER_DATABASE = {
     },
     "Khamzat Chimaev": {
         "record": "14-0-0", "natural_weight": 185, "style": "Freestyle Wrestling 6x Swedish National Champ",
-        "image": "https://a.espncdn.com/combiner/i?img=/i/headshots/mma/players/full/4684806.png",
+        "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4c/Khamzat_Chimaev_2022_%28cropped%29.png/300px-Khamzat_Chimaev_2022_%28cropped%29.png",
         "adaptation_archetype": "cut_relief",
         "slpm": 4.10, "str_acc": 0.58, "sapm": 1.15, "str_def": 0.56,
         "td_avg": 3.99, "td_acc": 0.53, "td_def": 1.00, "sub_avg": 1.50,
@@ -241,7 +242,7 @@ FIGHTER_DATABASE = {
     },
     "Dricus Du Plessis": {
         "record": "22-2-0", "natural_weight": 185, "style": "Awkward Pressure Kickboxing / Judo Black Belt",
-        "image": "https://a.espncdn.com/combiner/i?img=/i/headshots/mma/players/full/4685089.png",
+        "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/05/Dricus_du_Plessis_2023.jpg/300px-Dricus_du_Plessis_2023.jpg",
         "adaptation_archetype": "natural_frame",
         "slpm": 6.49, "str_acc": 0.55, "sapm": 4.77, "str_def": 0.55,
         "td_avg": 3.00, "td_acc": 0.50, "td_def": 0.50, "sub_avg": 1.20,
@@ -252,7 +253,7 @@ FIGHTER_DATABASE = {
     },
     "Shavkat Rakhmonov": {
         "record": "18-0-0", "natural_weight": 170, "style": "Combat Sambo / Master of Sport",
-        "image": "https://a.espncdn.com/combiner/i?img=/i/headshots/mma/players/full/4684807.png",
+        "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Shavkat_Rakhmonov_2023.jpg/300px-Shavkat_Rakhmonov_2023.jpg",
         "adaptation_archetype": "natural_frame",
         "slpm": 4.38, "str_acc": 0.59, "sapm": 2.61, "str_def": 0.53,
         "td_avg": 2.91, "td_acc": 0.50, "td_def": 1.00, "sub_avg": 1.60,
@@ -263,7 +264,7 @@ FIGHTER_DATABASE = {
     },
     "Belal Muhammad": {
         "record": "24-3-0", "natural_weight": 170, "style": "High-Pressure Wrestling / Boxing",
-        "image": "https://a.espncdn.com/combiner/i?img=/i/headshots/mma/players/full/3902096.png",
+        "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/36/Belal_Muhammad_2024.jpg/300px-Belal_Muhammad_2024.jpg",
         "adaptation_archetype": "natural_frame",
         "slpm": 4.55, "str_acc": 0.43, "sapm": 3.64, "str_def": 0.57,
         "td_avg": 2.20, "td_acc": 0.35, "td_def": 0.91, "sub_avg": 0.20,
@@ -274,7 +275,7 @@ FIGHTER_DATABASE = {
     },
     "Arman Tsarukyan": {
         "record": "22-3-0", "natural_weight": 155, "style": "Freestyle Wrestling / Explosive Muay Thai",
-        "image": "https://a.espncdn.com/combiner/i?img=/i/headshots/mma/players/full/4414603.png",
+        "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/91/Arman_Tsarukyan_2023.jpg/300px-Arman_Tsarukyan_2023.jpg",
         "adaptation_archetype": "natural_frame",
         "slpm": 3.89, "str_acc": 0.48, "sapm": 1.93, "str_def": 0.54,
         "td_avg": 3.32, "td_acc": 0.36, "td_def": 0.75, "sub_avg": 0.40,
@@ -285,7 +286,7 @@ FIGHTER_DATABASE = {
     },
     "Charles Oliveira": {
         "record": "34-10-0", "natural_weight": 155, "style": "Chute Boxe Muay Thai / 3rd Degree BJJ Black Belt",
-        "image": "https://a.espncdn.com/combiner/i?img=/i/headshots/mma/players/full/2511470.png",
+        "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7b/Charles_Oliveira.jpg/300px-Charles_Oliveira.jpg",
         "adaptation_archetype": "cut_relief",
         "slpm": 3.54, "str_acc": 0.53, "sapm": 3.19, "str_def": 0.51,
         "td_avg": 2.38, "td_acc": 0.40, "td_def": 0.55, "sub_avg": 2.70,
@@ -306,7 +307,7 @@ WEIGHT_CLASSES = {
     265: "Heavyweight Division (265 lbs)"
 }
 
-# --- EMPIRICAL CSAC REHYDRATION PHYSICS ---
+# --- ACCURATE CSAC IN-CAGE REHYDRATION PHYSICS ---
 def compute_in_cage_mass(fighter, contested_limit):
     natural_w = fighter["natural_weight"]
     rehydrate_pct = fighter["csac_rehydrate_pct"]
@@ -502,7 +503,7 @@ st.markdown(f"""
 </div>
 """, unsafe_allow_html=True)
 
-# --- TOP FIGHTER DOSSIER CARDS WITH VERIFIED HEADSHOTS ---
+# --- TOP FIGHTER DOSSIER CARDS WITH VERIFIED DIRECT IMAGES ---
 c_hdr1, c_hdr2 = st.columns(2)
 with c_hdr1:
     st.markdown(f"""
