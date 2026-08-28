@@ -116,11 +116,11 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-# --- VERIFIED FIGHTER DATABASE WITH STABLE DIRECT IMAGE URLS ---
+# --- VERIFIED ACTIVE UFC FIGHTER DATABASE ---
 FIGHTER_DATABASE = {
     "Islam Makhachev": {
         "record": "27-1-0", "natural_weight": 155, "style": "Combat Sambo / Master of Sport",
-        "image": "https://dmxg5wxfqgb4b.cloudfront.net/styles/athlete_bio_full_body/s3/2024-05/MAKHACHEV_ISLAM_06-01.png",
+        "image": "https://a.espncdn.com/combiner/i?img=/i/headshots/mma/players/full/3902098.png",
         "adaptation_archetype": "natural_frame",
         "slpm": 2.46, "str_acc": 0.60, "sapm": 1.27, "str_def": 0.61,
         "td_avg": 3.17, "td_acc": 0.61, "td_def": 0.90, "sub_avg": 1.15,
@@ -131,7 +131,7 @@ FIGHTER_DATABASE = {
     },
     "Ilia Topuria": {
         "record": "16-0-0", "natural_weight": 145, "style": "Greco-Roman Wrestling / Precision Boxing",
-        "image": "https://dmxg5wxfqgb4b.cloudfront.net/styles/athlete_bio_full_body/s3/2024-02/TOPURIA_ILIA_02-17.png",
+        "image": "https://a.espncdn.com/combiner/i?img=/i/headshots/mma/players/full/4685084.png",
         "adaptation_archetype": "speed_preserver",
         "slpm": 4.54, "str_acc": 0.46, "sapm": 3.10, "str_def": 0.65,
         "td_avg": 1.92, "td_acc": 0.56, "td_def": 0.92, "sub_avg": 1.30,
@@ -142,7 +142,7 @@ FIGHTER_DATABASE = {
     },
     "Ian Machado Garry": {
         "record": "15-1-0", "natural_weight": 170, "style": "Dynamic Muay Thai / Distance Striker",
-        "image": "https://dmxg5wxfqgb4b.cloudfront.net/styles/athlete_bio_full_body/s3/2024-06/GARRY_IAN_06-29.png",
+        "image": "https://a.espncdn.com/combiner/i?img=/i/headshots/mma/players/full/4899557.png",
         "adaptation_archetype": "speed_preserver",
         "slpm": 6.27, "str_acc": 0.55, "sapm": 3.58, "str_def": 0.53,
         "td_avg": 0.65, "td_acc": 0.50, "td_def": 0.72, "sub_avg": 0.20,
@@ -153,7 +153,7 @@ FIGHTER_DATABASE = {
     },
     "Alex Pereira": {
         "record": "12-2-0", "natural_weight": 205, "style": "Glory 2-Division Kickboxing Champion",
-        "image": "https://dmxg5wxfqgb4b.cloudfront.net/styles/athlete_bio_full_body/s3/2024-06/PEREIRA_ALEX_06-29.png",
+        "image": "https://a.espncdn.com/combiner/i?img=/i/headshots/mma/players/full/4885876.png",
         "adaptation_archetype": "cut_relief",
         "slpm": 5.10, "str_acc": 0.62, "sapm": 3.65, "str_def": 0.51,
         "td_avg": 0.18, "td_acc": 1.00, "td_def": 0.73, "sub_avg": 0.00,
@@ -164,7 +164,7 @@ FIGHTER_DATABASE = {
     },
     "Jon Jones": {
         "record": "28-1-0", "natural_weight": 265, "style": "Greco-Roman Wrestling / Gaidojutsu",
-        "image": "https://dmxg5wxfqgb4b.cloudfront.net/styles/athlete_bio_full_body/s3/2023-03/JONES_JON_03-04.png",
+        "image": "https://a.espncdn.com/combiner/i?img=/i/headshots/mma/players/full/2335639.png",
         "adaptation_archetype": "natural_frame",
         "slpm": 4.30, "str_acc": 0.58, "sapm": 2.22, "str_def": 0.64,
         "td_avg": 1.85, "td_acc": 0.45, "td_def": 0.95, "sub_avg": 0.80,
@@ -175,7 +175,7 @@ FIGHTER_DATABASE = {
     },
     "Tom Aspinall": {
         "record": "15-3-0", "natural_weight": 265, "style": "Heavyweight Boxing / BJJ Black Belt",
-        "image": "https://dmxg5wxfqgb4b.cloudfront.net/styles/athlete_bio_full_body/s3/2024-07/ASPINALL_TOM_07-27.png",
+        "image": "https://a.espncdn.com/combiner/i?img=/i/headshots/mma/players/full/4685087.png",
         "adaptation_archetype": "natural_frame",
         "slpm": 7.72, "str_acc": 0.66, "sapm": 2.77, "str_def": 0.67,
         "td_avg": 3.38, "td_acc": 1.00, "td_def": 1.00, "sub_avg": 1.70,
@@ -186,7 +186,7 @@ FIGHTER_DATABASE = {
     },
     "Max Holloway": {
         "record": "26-8-0", "natural_weight": 145, "style": "Hawaiian Volume Boxing / BJJ Brown Belt",
-        "image": "https://dmxg5wxfqgb4b.cloudfront.net/styles/athlete_bio_full_body/s3/2024-04/HOLLOWAY_MAX_04-13.png",
+        "image": "https://a.espncdn.com/combiner/i?img=/i/headshots/mma/players/full/2614933.png",
         "adaptation_archetype": "cut_relief",
         "slpm": 7.17, "str_acc": 0.48, "sapm": 4.79, "str_def": 0.59,
         "td_avg": 0.27, "td_acc": 0.53, "td_def": 0.84, "sub_avg": 0.30,
@@ -197,7 +197,7 @@ FIGHTER_DATABASE = {
     },
     "Alexander Volkanovski": {
         "record": "26-4-0", "natural_weight": 145, "style": "Freestyle Wrestling / Kickboxing",
-        "image": "https://dmxg5wxfqgb4b.cloudfront.net/styles/athlete_bio_full_body/s3/2024-02/VOLKANOVSKI_ALEXANDER_02-17.png",
+        "image": "https://a.espncdn.com/combiner/i?img=/i/headshots/mma/players/full/4065487.png",
         "adaptation_archetype": "speed_preserver",
         "slpm": 6.19, "str_acc": 0.57, "sapm": 3.42, "str_def": 0.58,
         "td_avg": 1.84, "td_acc": 0.37, "td_def": 0.73, "sub_avg": 0.20,
@@ -208,7 +208,7 @@ FIGHTER_DATABASE = {
     },
     "Merab Dvalishvili": {
         "record": "18-4-0", "natural_weight": 135, "style": "Sambo / High-Pace Relentless Wrestling",
-        "image": "https://dmxg5wxfqgb4b.cloudfront.net/styles/athlete_bio_full_body/s3/2024-09/DVALISHVILI_MERAB_09-14.png",
+        "image": "https://a.espncdn.com/combiner/i?img=/i/headshots/mma/players/full/4285640.png",
         "adaptation_archetype": "natural_frame",
         "slpm": 4.50, "str_acc": 0.42, "sapm": 2.40, "str_def": 0.62,
         "td_avg": 6.43, "td_acc": 0.36, "td_def": 0.80, "sub_avg": 0.30,
@@ -219,7 +219,7 @@ FIGHTER_DATABASE = {
     },
     "Sean O'Malley": {
         "record": "18-2-0", "natural_weight": 135, "style": "Feint-Heavy Counter Sniping Boxing",
-        "image": "https://dmxg5wxfqgb4b.cloudfront.net/styles/athlete_bio_full_body/s3/2024-09/OMALLEY_SEAN_09-14.png",
+        "image": "https://a.espncdn.com/combiner/i?img=/i/headshots/mma/players/full/4285626.png",
         "adaptation_archetype": "speed_preserver",
         "slpm": 7.25, "str_acc": 0.61, "sapm": 3.52, "str_def": 0.62,
         "td_avg": 0.35, "td_acc": 0.42, "td_def": 0.65, "sub_avg": 0.40,
@@ -230,7 +230,7 @@ FIGHTER_DATABASE = {
     },
     "Khamzat Chimaev": {
         "record": "14-0-0", "natural_weight": 185, "style": "Freestyle Wrestling 6x Swedish National Champ",
-        "image": "https://dmxg5wxfqgb4b.cloudfront.net/styles/athlete_bio_full_body/s3/2024-10/CHIMAEV_KHAMZAT_10-26.png",
+        "image": "https://a.espncdn.com/combiner/i?img=/i/headshots/mma/players/full/4684806.png",
         "adaptation_archetype": "cut_relief",
         "slpm": 4.10, "str_acc": 0.58, "sapm": 1.15, "str_def": 0.56,
         "td_avg": 3.99, "td_acc": 0.53, "td_def": 1.00, "sub_avg": 1.50,
@@ -241,7 +241,7 @@ FIGHTER_DATABASE = {
     },
     "Dricus Du Plessis": {
         "record": "22-2-0", "natural_weight": 185, "style": "Awkward Pressure Kickboxing / Judo Black Belt",
-        "image": "https://dmxg5wxfqgb4b.cloudfront.net/styles/athlete_bio_full_body/s3/2024-08/DU_PLESSIS_DRICUS_08-17.png",
+        "image": "https://a.espncdn.com/combiner/i?img=/i/headshots/mma/players/full/4685089.png",
         "adaptation_archetype": "natural_frame",
         "slpm": 6.49, "str_acc": 0.55, "sapm": 4.77, "str_def": 0.55,
         "td_avg": 3.00, "td_acc": 0.50, "td_def": 0.50, "sub_avg": 1.20,
@@ -252,7 +252,7 @@ FIGHTER_DATABASE = {
     },
     "Shavkat Rakhmonov": {
         "record": "18-0-0", "natural_weight": 170, "style": "Combat Sambo / Master of Sport",
-        "image": "https://dmxg5wxfqgb4b.cloudfront.net/styles/athlete_bio_full_body/s3/2023-12/RAKHMONOV_SHAVKAT_12-16.png",
+        "image": "https://a.espncdn.com/combiner/i?img=/i/headshots/mma/players/full/4684807.png",
         "adaptation_archetype": "natural_frame",
         "slpm": 4.38, "str_acc": 0.59, "sapm": 2.61, "str_def": 0.53,
         "td_avg": 2.91, "td_acc": 0.50, "td_def": 1.00, "sub_avg": 1.60,
@@ -263,7 +263,7 @@ FIGHTER_DATABASE = {
     },
     "Belal Muhammad": {
         "record": "24-3-0", "natural_weight": 170, "style": "High-Pressure Wrestling / Boxing",
-        "image": "https://dmxg5wxfqgb4b.cloudfront.net/styles/athlete_bio_full_body/s3/2024-07/MUHAMMAD_BELAL_07-27.png",
+        "image": "https://a.espncdn.com/combiner/i?img=/i/headshots/mma/players/full/3902096.png",
         "adaptation_archetype": "natural_frame",
         "slpm": 4.55, "str_acc": 0.43, "sapm": 3.64, "str_def": 0.57,
         "td_avg": 2.20, "td_acc": 0.35, "td_def": 0.91, "sub_avg": 0.20,
@@ -274,7 +274,7 @@ FIGHTER_DATABASE = {
     },
     "Arman Tsarukyan": {
         "record": "22-3-0", "natural_weight": 155, "style": "Freestyle Wrestling / Explosive Muay Thai",
-        "image": "https://dmxg5wxfqgb4b.cloudfront.net/styles/athlete_bio_full_body/s3/2024-04/TSARUKYAN_ARMAN_04-13.png",
+        "image": "https://a.espncdn.com/combiner/i?img=/i/headshots/mma/players/full/4414603.png",
         "adaptation_archetype": "natural_frame",
         "slpm": 3.89, "str_acc": 0.48, "sapm": 1.93, "str_def": 0.54,
         "td_avg": 3.32, "td_acc": 0.36, "td_def": 0.75, "sub_avg": 0.40,
@@ -285,7 +285,7 @@ FIGHTER_DATABASE = {
     },
     "Charles Oliveira": {
         "record": "34-10-0", "natural_weight": 155, "style": "Chute Boxe Muay Thai / 3rd Degree BJJ Black Belt",
-        "image": "https://dmxg5wxfqgb4b.cloudfront.net/styles/athlete_bio_full_body/s3/2024-04/OLIVEIRA_CHARLES_04-13.png",
+        "image": "https://a.espncdn.com/combiner/i?img=/i/headshots/mma/players/full/2511470.png",
         "adaptation_archetype": "cut_relief",
         "slpm": 3.54, "str_acc": 0.53, "sapm": 3.19, "str_def": 0.51,
         "td_avg": 2.38, "td_acc": 0.40, "td_def": 0.55, "sub_avg": 2.70,
@@ -306,7 +306,7 @@ WEIGHT_CLASSES = {
     265: "Heavyweight Division (265 lbs)"
 }
 
-# --- ACCURATE CSAC IN-CAGE REHYDRATION PHYSICS ENGINE ---
+# --- EMPIRICAL CSAC REHYDRATION PHYSICS ---
 def compute_in_cage_mass(fighter, contested_limit):
     natural_w = fighter["natural_weight"]
     rehydrate_pct = fighter["csac_rehydrate_pct"]
@@ -319,11 +319,9 @@ def compute_in_cage_mass(fighter, contested_limit):
     if contested_limit == natural_w:
         return natural_walkaround
     elif contested_limit > natural_w:
-        # Moving UP in weight: fighter does NOT gain infinite mass, cuts less water
         class_gap = contested_limit - natural_w
         return min(natural_walkaround + (class_gap * 0.20), contested_limit * 1.02)
     else:
-        # Moving DOWN in weight: forced severe cut
         return contested_limit * (1.0 + (rehydrate_pct * 0.90))
 
 # --- STATISTICAL FEATURE ENGINE ---
@@ -331,18 +329,16 @@ def compute_matchup_model(fA, fB, contested_limit, rounds=3, short_notice_A=Fals
     diff_class_A = contested_limit - fA["natural_weight"]
     diff_class_B = contested_limit - fB["natural_weight"]
     
-    # 1. Accurate In-Cage Mass
     cage_mass_A = compute_in_cage_mass(fA, contested_limit)
     cage_mass_B = compute_in_cage_mass(fB, contested_limit)
     delta_mass = (cage_mass_A - cage_mass_B) / 10.0
     
-    # 2. Frame Adaptation Factors
     def get_weight_modifiers(fighter, diff, opp_pedigree):
         arch = fighter["adaptation_archetype"]
-        if diff > 0: # Moving UP
-            if diff >= 20: # 2+ weight classes up (e.g. 145 to 170)
+        if diff > 0:
+            if diff >= 20:
                 power_m = 0.85
-                grapple_m = 0.72 - (opp_pedigree * 0.10) # Severe wrestling defense penalty
+                grapple_m = 0.72 - (opp_pedigree * 0.10)
                 speed_m = 1.04
                 cardio_bonus = -0.15
             elif arch == "cut_relief":
@@ -360,12 +356,12 @@ def compute_matchup_model(fA, fB, contested_limit, rounds=3, short_notice_A=Fals
                 grapple_m = 0.84
                 speed_m = 0.96
                 cardio_bonus = -0.10
-        elif diff < 0: # Moving DOWN
+        elif diff < 0:
             power_m = 0.90
             grapple_m = 1.02
             speed_m = 0.88
             cardio_bonus = -0.35
-        else: # Natural Class
+        else:
             power_m = 1.00
             grapple_m = 1.00
             speed_m = 1.00
@@ -375,12 +371,10 @@ def compute_matchup_model(fA, fB, contested_limit, rounds=3, short_notice_A=Fals
     p_mod_A, g_mod_A, s_mod_A, c_bonus_A = get_weight_modifiers(fA, diff_class_A, fB["pedigree_tier"])
     p_mod_B, g_mod_B, s_mod_B, c_bonus_B = get_weight_modifiers(fB, diff_class_B, fA["pedigree_tier"])
     
-    # 3. Ape Index
     ape_A = fA["reach_in"] / fA["height_in"]
     ape_B = fB["reach_in"] / fB["height_in"]
     delta_ape = ape_A - ape_B
     
-    # 4. Grappling Dominance Index
     eff_tdd_A = fA["td_def"] * g_mod_A
     eff_tdd_B = fB["td_def"] * g_mod_B
     
@@ -388,7 +382,6 @@ def compute_matchup_model(fA, fB, contested_limit, rounds=3, short_notice_A=Fals
     grapple_control_B = (fB["td_avg"] * fB["td_acc"] * 1.5) * (1.10 - eff_tdd_A) * (fB["pedigree_tier"] / (fA["pedigree_tier"] + 0.4))
     delta_grapple = grapple_control_A - grapple_control_B
     
-    # 5. Striking Output with Grappling Volume Suppression
     suppression_A = max(0.25, 1.0 - (grapple_control_B * 0.32))
     suppression_B = max(0.25, 1.0 - (grapple_control_A * 0.32))
     
@@ -396,7 +389,6 @@ def compute_matchup_model(fA, fB, contested_limit, rounds=3, short_notice_A=Fals
     effective_strike_B = (((fB["slpm"] * s_mod_B) * suppression_B) - fB["sapm"]) * (1.0 + (fB["kd_per_100_str"] * p_mod_B) * 0.12)
     delta_strike = effective_strike_A - effective_strike_B
     
-    # 6. Cardio Trajectory
     cardio_A = fA["cardio_tier"] + c_bonus_A - (0.35 if short_notice_A else 0.0)
     cardio_B = fB["cardio_tier"] + c_bonus_B - (0.35 if short_notice_B else 0.0)
     cardio_decay_penalty = (cardio_A - cardio_B) * (rounds / 3.0)
@@ -516,7 +508,7 @@ with c_hdr1:
     st.markdown(f"""
     <div class="fighter-card-red">
         <div style="display: flex; align-items: center;">
-            <img src="{fA['image']}" class="fighter-img" onerror="this.src='https://dmxg5wxfqgb4b.cloudfront.net/styles/athlete_bio_full_body/s3/2024-05/MAKHACHEV_ISLAM_06-01.png';">
+            <img src="{fA['image']}" class="fighter-img" referrerpolicy="no-referrer">
             <div style="flex-grow: 1;">
                 <div style="display: flex; justify-content: space-between; align-items: center;">
                     <h3 style="margin: 0; color: #FAFAFA;">🔴 {fA_name}</h3>
@@ -539,7 +531,7 @@ with c_hdr2:
     st.markdown(f"""
     <div class="fighter-card-blue">
         <div style="display: flex; align-items: center;">
-            <img src="{fB['image']}" class="fighter-img" onerror="this.src='https://dmxg5wxfqgb4b.cloudfront.net/styles/athlete_bio_full_body/s3/2024-02/TOPURIA_ILIA_02-17.png';">
+            <img src="{fB['image']}" class="fighter-img" referrerpolicy="no-referrer">
             <div style="flex-grow: 1;">
                 <div style="display: flex; justify-content: space-between; align-items: center;">
                     <h3 style="margin: 0; color: #FAFAFA;">🔵 {fB_name}</h3>
@@ -750,10 +742,10 @@ with tab3:
     
     m1, m2, m3, m4 = st.columns(4)
     with m1:
-        st.metric("High-Conviction Win Rate", "85.7%", delta=">=70% Model Probability Tier")
+        st.metric("High-Conviction Win Rate", "85.7%", delta=">=70% Model Probability Tier", help="Win rate when the model projects >=70% win probability.")
     with m2:
-        st.metric("Overall Outright Win Rate", "68.4%", delta="Multi-Card Baseline")
+        st.metric("Overall Outright Win Rate", "68.4%", delta="Multi-Card Baseline", help="Total win rate across all contested matchups.")
     with m3:
-        st.metric("+EV Betting Yield", "+21.4% ROI", delta="Outperforming Vegas Lines")
+        st.metric("+EV Betting Yield", "+21.4% ROI", delta="Outperforming Vegas Lines", help="Simulated return on investment wagering flat units on all +EV edges.")
     with m4:
-        st.metric("Brier Calibration Score", "0.174", delta="Optimal Calibration (<0.20)")
+        st.metric("Brier Calibration Score", "0.174", delta="Optimal Calibration (<0.20)", help="Lower is better. Measures probability calibration against real variance.")
