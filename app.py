@@ -503,13 +503,20 @@ st.markdown(f"""
 </div>
 """, unsafe_allow_html=True)
 
-# --- TOP FIGHTER DOSSIER CARDS WITH VERIFIED DIRECT IMAGES ---
+# --- TOP FIGHTER DOSSIER CARDS (FAIL-SAFE IN-MEMORY AVATARS) ---
+def get_initials(name):
+    parts = name.split()
+    return f"{parts[0][0]}{parts[-1][0]}"
+
 c_hdr1, c_hdr2 = st.columns(2)
 with c_hdr1:
+    init_A = get_initials(fA_name)
     st.markdown(f"""
     <div class="fighter-card-red">
         <div style="display: flex; align-items: center;">
-            <img src="{fA['image']}" class="fighter-img" referrerpolicy="no-referrer">
+            <div style="width: 75px; height: 75px; border-radius: 50%; background: linear-gradient(135deg, #EF4444 0%, #991B1B 100%); display: flex; align-items: center; justify-content: center; font-size: 1.6rem; font-weight: 800; color: #FFFFFF; border: 2px solid #F87171; margin-right: 16px; flex-shrink: 0; box-shadow: 0 4px 10px rgba(239, 68, 68, 0.3);">
+                {init_A}
+            </div>
             <div style="flex-grow: 1;">
                 <div style="display: flex; justify-content: space-between; align-items: center;">
                     <h3 style="margin: 0; color: #FAFAFA;">🔴 {fA_name}</h3>
@@ -529,10 +536,13 @@ with c_hdr1:
     """, unsafe_allow_html=True)
 
 with c_hdr2:
+    init_B = get_initials(fB_name)
     st.markdown(f"""
     <div class="fighter-card-blue">
         <div style="display: flex; align-items: center;">
-            <img src="{fB['image']}" class="fighter-img" referrerpolicy="no-referrer">
+            <div style="width: 75px; height: 75px; border-radius: 50%; background: linear-gradient(135deg, #3B82F6 0%, #1E40AF 100%); display: flex; align-items: center; justify-content: center; font-size: 1.6rem; font-weight: 800; color: #FFFFFF; border: 2px solid #60A5FA; margin-right: 16px; flex-shrink: 0; box-shadow: 0 4px 10px rgba(59, 130, 246, 0.3);">
+                {init_B}
+            </div>
             <div style="flex-grow: 1;">
                 <div style="display: flex; justify-content: space-between; align-items: center;">
                     <h3 style="margin: 0; color: #FAFAFA;">🔵 {fB_name}</h3>
