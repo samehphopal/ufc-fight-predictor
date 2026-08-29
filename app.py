@@ -1,3 +1,6 @@
+import base64
+import re
+from pathlib import Path
 import streamlit as st
 import pandas as pd
 import numpy as np
@@ -72,14 +75,15 @@ st.markdown("""
         margin-bottom: 12px;
     }
     .fighter-img {
-        width: 85px;
-        height: 85px;
+        width: 75px;
+        height: 75px;
         border-radius: 50%;
         object-fit: cover;
         background-color: #1E293B;
         border: 2px solid #475569;
         margin-right: 16px;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+        flex-shrink: 0;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.5);
     }
     .tag-badge {
         display: inline-block;
@@ -117,186 +121,6 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-# --- VERIFIED ACTIVE FIGHTER DATABASE (STABLE UNBLOCKED THUMBNAILS) ---
-FIGHTER_DATABASE = {
-    "Islam Makhachev": {
-        "record": "27-1-0", "natural_weight": 155, "style": "Combat Sambo / Master of Sport",
-        "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e2/Islam_Makhachev_2023.jpg/300px-Islam_Makhachev_2023.jpg",
-        "adaptation_archetype": "natural_frame",
-        "slpm": 2.46, "str_acc": 0.60, "sapm": 1.27, "str_def": 0.61,
-        "td_avg": 3.17, "td_acc": 0.61, "td_def": 0.90, "sub_avg": 1.15,
-        "reach_in": 70.0, "height_in": 70.0, "age": 33, "stance": "Southpaw",
-        "csac_rehydrate_pct": 0.155, "kd_per_100_str": 0.8, "pedigree_tier": 2.0, "cardio_tier": 1.95,
-        "base_ko": 0.20, "base_sub": 0.50, "base_dec": 0.30, "vegas_baseline": -220,
-        "trivia": "Islam absorbs just 1.27 significant strikes per minute—the lowest defensive strike absorption rate in UFC Lightweight history."
-    },
-    "Ilia Topuria": {
-        "record": "16-0-0", "natural_weight": 145, "style": "Greco-Roman Wrestling / Precision Boxing",
-        "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c0/Ilia_Topuria_at_the_Orbeliani_Palace_%28cropped%29.jpg/300px-Ilia_Topuria_at_the_Orbeliani_Palace_%28cropped%29.jpg",
-        "adaptation_archetype": "speed_preserver",
-        "slpm": 4.54, "str_acc": 0.46, "sapm": 3.10, "str_def": 0.65,
-        "td_avg": 1.92, "td_acc": 0.56, "td_def": 0.92, "sub_avg": 1.30,
-        "reach_in": 69.0, "height_in": 67.0, "age": 28, "stance": "Orthodox",
-        "csac_rehydrate_pct": 0.145, "kd_per_100_str": 2.6, "pedigree_tier": 1.8, "cardio_tier": 1.90,
-        "base_ko": 0.55, "base_sub": 0.30, "base_dec": 0.15, "vegas_baseline": -165,
-        "trivia": "Topuria possesses a 92% takedown defense rate alongside one of the highest rotational knockout punch powers in the Featherweight division."
-    },
-    "Ian Machado Garry": {
-        "record": "15-1-0", "natural_weight": 170, "style": "Dynamic Muay Thai / Distance Striker",
-        "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8b/Ian_Garry_2023.jpg/300px-Ian_Garry_2023.jpg",
-        "adaptation_archetype": "speed_preserver",
-        "slpm": 6.27, "str_acc": 0.55, "sapm": 3.58, "str_def": 0.53,
-        "td_avg": 0.65, "td_acc": 0.50, "td_def": 0.72, "sub_avg": 0.20,
-        "reach_in": 74.5, "height_in": 75.0, "age": 27, "stance": "Orthodox",
-        "csac_rehydrate_pct": 0.110, "kd_per_100_str": 1.2, "pedigree_tier": 0.9, "cardio_tier": 1.80,
-        "base_ko": 0.45, "base_sub": 0.08, "base_dec": 0.47, "vegas_baseline": +180,
-        "trivia": "Ian Garry lands 6.27 significant strikes per minute while utilizing a +4.5 inch height and reach frame advantage at Welterweight."
-    },
-    "Alex Pereira": {
-        "record": "12-2-0", "natural_weight": 205, "style": "Glory 2-Division Kickboxing Champion",
-        "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/48/Alex_Pereira_2023.jpg/300px-Alex_Pereira_2023.jpg",
-        "adaptation_archetype": "cut_relief",
-        "slpm": 5.10, "str_acc": 0.62, "sapm": 3.65, "str_def": 0.51,
-        "td_avg": 0.18, "td_acc": 1.00, "td_def": 0.73, "sub_avg": 0.00,
-        "reach_in": 79.0, "height_in": 76.0, "age": 37, "stance": "Orthodox",
-        "csac_rehydrate_pct": 0.135, "kd_per_100_str": 3.4, "pedigree_tier": 1.9, "cardio_tier": 1.45,
-        "base_ko": 0.85, "base_sub": 0.00, "base_dec": 0.15, "vegas_baseline": -140,
-        "trivia": "Pereira holds an 85% KO finish rate in UFC title bouts, generating historic left-hook kinetic force without telegraphing."
-    },
-    "Jon Jones": {
-        "record": "28-1-0", "natural_weight": 265, "style": "Greco-Roman Wrestling / Gaidojutsu",
-        "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/87/Jon_Jones_-_Supporting_Brain_Health_Study.jpg/300px-Jon_Jones_-_Supporting_Brain_Health_Study.jpg",
-        "adaptation_archetype": "natural_frame",
-        "slpm": 4.30, "str_acc": 0.58, "sapm": 2.22, "str_def": 0.64,
-        "td_avg": 1.85, "td_acc": 0.45, "td_def": 0.95, "sub_avg": 0.80,
-        "reach_in": 84.5, "height_in": 76.0, "age": 37, "stance": "Orthodox",
-        "csac_rehydrate_pct": 0.000, "kd_per_100_str": 1.4, "pedigree_tier": 2.0, "cardio_tier": 1.85,
-        "base_ko": 0.38, "base_sub": 0.28, "base_dec": 0.34, "vegas_baseline": -260,
-        "trivia": "Jones holds an 84.5-inch reach—the longest wingspan in modern UFC history—giving him an Ape Index of 1.11."
-    },
-    "Tom Aspinall": {
-        "record": "15-3-0", "natural_weight": 265, "style": "Heavyweight Boxing / BJJ Black Belt",
-        "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4e/Tom_Aspinall_2023.jpg/300px-Tom_Aspinall_2023.jpg",
-        "adaptation_archetype": "natural_frame",
-        "slpm": 7.72, "str_acc": 0.66, "sapm": 2.77, "str_def": 0.67,
-        "td_avg": 3.38, "td_acc": 1.00, "td_def": 1.00, "sub_avg": 1.70,
-        "reach_in": 78.0, "height_in": 77.0, "age": 31, "stance": "Orthodox",
-        "csac_rehydrate_pct": 0.000, "kd_per_100_str": 3.8, "pedigree_tier": 1.8, "cardio_tier": 1.75,
-        "base_ko": 0.75, "base_sub": 0.20, "base_dec": 0.05, "vegas_baseline": -175,
-        "trivia": "Aspinall averages the shortest fight time in UFC history at 2 minutes and 2 seconds, with elite hand speed for the Heavyweight division."
-    },
-    "Max Holloway": {
-        "record": "26-8-0", "natural_weight": 145, "style": "Hawaiian Volume Boxing / BJJ Brown Belt",
-        "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/be/Max_Holloway_BMF.png/300px-Max_Holloway_BMF.png",
-        "adaptation_archetype": "cut_relief",
-        "slpm": 7.17, "str_acc": 0.48, "sapm": 4.79, "str_def": 0.59,
-        "td_avg": 0.27, "td_acc": 0.53, "td_def": 0.84, "sub_avg": 0.30,
-        "reach_in": 69.0, "height_in": 71.0, "age": 32, "stance": "Orthodox",
-        "csac_rehydrate_pct": 0.140, "kd_per_100_str": 0.6, "pedigree_tier": 0.8, "cardio_tier": 2.00,
-        "base_ko": 0.44, "base_sub": 0.06, "base_dec": 0.50, "vegas_baseline": +135,
-        "trivia": "Holloway holds the UFC all-time record for total significant strikes landed with over 3,300 across his promotional career."
-    },
-    "Alexander Volkanovski": {
-        "record": "26-4-0", "natural_weight": 145, "style": "Freestyle Wrestling / Kickboxing",
-        "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4e/Alex_Volkanovski.jpg/300px-Alex_Volkanovski.jpg",
-        "adaptation_archetype": "speed_preserver",
-        "slpm": 6.19, "str_acc": 0.57, "sapm": 3.42, "str_def": 0.58,
-        "td_avg": 1.84, "td_acc": 0.37, "td_def": 0.73, "sub_avg": 0.20,
-        "reach_in": 71.5, "height_in": 66.0, "age": 36, "stance": "Orthodox",
-        "csac_rehydrate_pct": 0.145, "kd_per_100_str": 0.9, "pedigree_tier": 1.4, "cardio_tier": 2.00,
-        "base_ko": 0.42, "base_sub": 0.12, "base_dec": 0.46, "vegas_baseline": +125,
-        "trivia": "Volkanovski fought at 214 lbs during his semi-pro rugby career before transitioning down to capture the UFC Featherweight belt."
-    },
-    "Merab Dvalishvili": {
-        "record": "18-4-0", "natural_weight": 135, "style": "Sambo / High-Pace Relentless Wrestling",
-        "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c4/Merab_Dvalishvili_2022_%282%29.jpg/300px-Merab_Dvalishvili_2022_%282%29.jpg",
-        "adaptation_archetype": "natural_frame",
-        "slpm": 4.50, "str_acc": 0.42, "sapm": 2.40, "str_def": 0.62,
-        "td_avg": 6.43, "td_acc": 0.36, "td_def": 0.80, "sub_avg": 0.30,
-        "reach_in": 68.0, "height_in": 66.0, "age": 34, "stance": "Orthodox",
-        "csac_rehydrate_pct": 0.155, "kd_per_100_str": 0.3, "pedigree_tier": 1.9, "cardio_tier": 2.00,
-        "base_ko": 0.18, "base_sub": 0.08, "base_dec": 0.74, "vegas_baseline": -190,
-        "trivia": "Merab attempted an all-time record 49 takedowns in 25 minutes during his dominant victory over Petr Yan."
-    },
-    "Sean O'Malley": {
-        "record": "18-2-0", "natural_weight": 135, "style": "Feint-Heavy Counter Sniping Boxing",
-        "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2a/Sean_O%27Malley_in_2024.jpg/300px-Sean_O%27Malley_in_2024.jpg",
-        "adaptation_archetype": "speed_preserver",
-        "slpm": 7.25, "str_acc": 0.61, "sapm": 3.52, "str_def": 0.62,
-        "td_avg": 0.35, "td_acc": 0.42, "td_def": 0.65, "sub_avg": 0.40,
-        "reach_in": 72.0, "height_in": 71.0, "age": 30, "stance": "Switch",
-        "csac_rehydrate_pct": 0.140, "kd_per_100_str": 1.9, "pedigree_tier": 0.9, "cardio_tier": 1.85,
-        "base_ko": 0.68, "base_sub": 0.05, "base_dec": 0.27, "vegas_baseline": +155,
-        "trivia": "O'Malley maintains a 61% striking accuracy—ranking in the 99th percentile across all UFC bantamweight historical telemetry."
-    },
-    "Khamzat Chimaev": {
-        "record": "14-0-0", "natural_weight": 185, "style": "Freestyle Wrestling 6x Swedish National Champ",
-        "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4c/Khamzat_Chimaev_2022_%28cropped%29.png/300px-Khamzat_Chimaev_2022_%28cropped%29.png",
-        "adaptation_archetype": "cut_relief",
-        "slpm": 4.10, "str_acc": 0.58, "sapm": 1.15, "str_def": 0.56,
-        "td_avg": 3.99, "td_acc": 0.53, "td_def": 1.00, "sub_avg": 1.50,
-        "reach_in": 75.0, "height_in": 74.0, "age": 30, "stance": "Orthodox",
-        "csac_rehydrate_pct": 0.135, "kd_per_100_str": 2.1, "pedigree_tier": 2.0, "cardio_tier": 1.25,
-        "base_ko": 0.44, "base_sub": 0.42, "base_dec": 0.14, "vegas_baseline": -210,
-        "trivia": "In his first four UFC bouts combined, Chimaev absorbed only a single significant strike while landing 254 strikes."
-    },
-    "Dricus Du Plessis": {
-        "record": "22-2-0", "natural_weight": 185, "style": "Awkward Pressure Kickboxing / Judo Black Belt",
-        "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/05/Dricus_du_Plessis_2023.jpg/300px-Dricus_du_Plessis_2023.jpg",
-        "adaptation_archetype": "natural_frame",
-        "slpm": 6.49, "str_acc": 0.55, "sapm": 4.77, "str_def": 0.55,
-        "td_avg": 3.00, "td_acc": 0.50, "td_def": 0.50, "sub_avg": 1.20,
-        "reach_in": 76.0, "height_in": 73.0, "age": 31, "stance": "Switch",
-        "csac_rehydrate_pct": 0.140, "kd_per_100_str": 1.5, "pedigree_tier": 1.5, "cardio_tier": 1.85,
-        "base_ko": 0.45, "base_sub": 0.45, "base_dec": 0.10, "vegas_baseline": -120,
-        "trivia": "Du Plessis has finished 20 of his 22 career wins inside the distance across submission and knockout stoppage methods."
-    },
-    "Shavkat Rakhmonov": {
-        "record": "18-0-0", "natural_weight": 170, "style": "Combat Sambo / Master of Sport",
-        "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Shavkat_Rakhmonov_2023.jpg/300px-Shavkat_Rakhmonov_2023.jpg",
-        "adaptation_archetype": "natural_frame",
-        "slpm": 4.38, "str_acc": 0.59, "sapm": 2.61, "str_def": 0.53,
-        "td_avg": 2.91, "td_acc": 0.50, "td_def": 1.00, "sub_avg": 1.60,
-        "reach_in": 77.0, "height_in": 73.0, "age": 30, "stance": "Orthodox",
-        "csac_rehydrate_pct": 0.135, "kd_per_100_str": 1.8, "pedigree_tier": 1.9, "cardio_tier": 1.80,
-        "base_ko": 0.44, "base_sub": 0.56, "base_dec": 0.00, "vegas_baseline": -240,
-        "trivia": "Rakhmonov holds a 100% finish rate in his professional career, with 8 knockouts and 10 submission victories."
-    },
-    "Belal Muhammad": {
-        "record": "24-3-0", "natural_weight": 170, "style": "High-Pressure Wrestling / Boxing",
-        "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/36/Belal_Muhammad_2024.jpg/300px-Belal_Muhammad_2024.jpg",
-        "adaptation_archetype": "natural_frame",
-        "slpm": 4.55, "str_acc": 0.43, "sapm": 3.64, "str_def": 0.57,
-        "td_avg": 2.20, "td_acc": 0.35, "td_def": 0.91, "sub_avg": 0.20,
-        "reach_in": 72.0, "height_in": 70.0, "age": 36, "stance": "Orthodox",
-        "csac_rehydrate_pct": 0.120, "kd_per_100_str": 0.4, "pedigree_tier": 1.6, "cardio_tier": 2.00,
-        "base_ko": 0.20, "base_sub": 0.05, "base_dec": 0.75, "vegas_baseline": +160,
-        "trivia": "Belal Muhammad executed a 10-fight unbeaten streak utilizing continuous forward pace and a 91% takedown defense rate."
-    },
-    "Arman Tsarukyan": {
-        "record": "22-3-0", "natural_weight": 155, "style": "Freestyle Wrestling / Explosive Muay Thai",
-        "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/91/Arman_Tsarukyan_2023.jpg/300px-Arman_Tsarukyan_2023.jpg",
-        "adaptation_archetype": "natural_frame",
-        "slpm": 3.89, "str_acc": 0.48, "sapm": 1.93, "str_def": 0.54,
-        "td_avg": 3.32, "td_acc": 0.36, "td_def": 0.75, "sub_avg": 0.40,
-        "reach_in": 72.5, "height_in": 67.0, "age": 28, "stance": "Orthodox",
-        "csac_rehydrate_pct": 0.150, "kd_per_100_str": 1.4, "pedigree_tier": 1.8, "cardio_tier": 1.90,
-        "base_ko": 0.43, "base_sub": 0.24, "base_dec": 0.33, "vegas_baseline": +175,
-        "trivia": "Tsarukyan landed 12 takedowns across his early promotional fights and holds an elite 1.08 Ape Index for Lightweight."
-    },
-    "Charles Oliveira": {
-        "record": "34-10-0", "natural_weight": 155, "style": "Chute Boxe Muay Thai / 3rd Degree BJJ Black Belt",
-        "image": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7b/Charles_Oliveira.jpg/300px-Charles_Oliveira.jpg",
-        "adaptation_archetype": "cut_relief",
-        "slpm": 3.54, "str_acc": 0.53, "sapm": 3.19, "str_def": 0.51,
-        "td_avg": 2.38, "td_acc": 0.40, "td_def": 0.55, "sub_avg": 2.70,
-        "reach_in": 74.0, "height_in": 70.0, "age": 35, "stance": "Orthodox",
-        "csac_rehydrate_pct": 0.140, "kd_per_100_str": 1.8, "pedigree_tier": 2.0, "cardio_tier": 1.65,
-        "base_ko": 0.28, "base_sub": 0.62, "base_dec": 0.10, "vegas_baseline": +140,
-        "trivia": "Oliveira holds the all-time UFC records for most finishes (20) and most submission victories (16)."
-    }
-}
-
 WEIGHT_CLASSES = {
     135: "Bantamweight Division (135 lbs)",
     145: "Featherweight Division (145 lbs)",
@@ -307,13 +131,57 @@ WEIGHT_CLASSES = {
     265: "Heavyweight Division (265 lbs)"
 }
 
-# --- ACCURATE CSAC IN-CAGE REHYDRATION PHYSICS ---
+# --- DYNAMIC DATA PIPELINE WITH CACHED PARQUET ---
+@st.cache_data(ttl="6h", show_spinner=False)
+def load_fighter_dataset() -> dict:
+    parquet_path = Path("data/fighters_master.parquet")
+    if not parquet_path.exists():
+        # Lazy fallback execution if parquet isn't built yet
+        from etl_pipeline import build_roster_database
+        build_roster_database()
+        
+    df = pd.read_parquet(parquet_path)
+    
+    def cache_base64(path_str):
+        if path_str and Path(path_str).exists():
+            return base64.b64encode(Path(path_str).read_bytes()).decode("utf-8")
+        return None
+        
+    df["img_b64"] = df["local_image_path"].apply(cache_base64)
+    return df.set_index("name").to_dict(orient="index")
+
+FIGHTER_DATABASE = load_fighter_dataset()
+
+# --- MODULAR BASE64 & CSS AVATAR RENDERER ---
+def render_avatar(name: str, corner: str = "red") -> str:
+    data = FIGHTER_DATABASE.get(name, {})
+    img_b64 = data.get("img_b64")
+    
+    if img_b64:
+        return f'<img src="data:image/png;base64,{img_b64}" class="fighter-img" alt="{name}">'
+    
+    parts = name.split()
+    initials = f"{parts[0][0]}{parts[-1][0]}" if len(parts) > 1 else name[:2].upper()
+    bg = "linear-gradient(135deg, #EF4444 0%, #991B1B 100%)" if corner == "red" else "linear-gradient(135deg, #3B82F6 0%, #1E40AF 100%)"
+    border = "#F87171" if corner == "red" else "#60A5FA"
+    shadow = "rgba(239, 68, 68, 0.3)" if corner == "red" else "rgba(59, 130, 246, 0.3)"
+    
+    return f"""
+    <div style="width: 75px; height: 75px; border-radius: 50%; background: {bg}; 
+                display: flex; align-items: center; justify-content: center; font-size: 1.5rem; 
+                font-weight: 800; color: #FFFFFF; border: 2px solid {border}; 
+                margin-right: 16px; flex-shrink: 0; box-shadow: 0 4px 10px {shadow};">
+        {initials}
+    </div>
+    """
+
+# --- BIOMECHANICAL & PROBABILISTIC FEATURE ENGINE ---
 def compute_in_cage_mass(fighter, contested_limit):
     natural_w = fighter["natural_weight"]
     rehydrate_pct = fighter["csac_rehydrate_pct"]
     
     if natural_w == 265 or contested_limit == 265:
-        return 248.0 if "Jones" in fighter["style"] else 256.0
+        return 248.0 if "Jones" in fighter.get("style", "") else 256.0
         
     natural_walkaround = natural_w * (1.0 + rehydrate_pct)
     
@@ -325,7 +193,6 @@ def compute_in_cage_mass(fighter, contested_limit):
     else:
         return contested_limit * (1.0 + (rehydrate_pct * 0.90))
 
-# --- STATISTICAL FEATURE ENGINE ---
 def compute_matchup_model(fA, fB, contested_limit, rounds=3, short_notice_A=False, short_notice_B=False):
     diff_class_A = contested_limit - fA["natural_weight"]
     diff_class_B = contested_limit - fB["natural_weight"]
@@ -363,10 +230,7 @@ def compute_matchup_model(fA, fB, contested_limit, rounds=3, short_notice_A=Fals
             speed_m = 0.88
             cardio_bonus = -0.35
         else:
-            power_m = 1.00
-            grapple_m = 1.00
-            speed_m = 1.00
-            cardio_bonus = 0.00
+            power_m, grapple_m, speed_m, cardio_bonus = 1.0, 1.0, 1.0, 0.0
         return power_m, grapple_m, speed_m, cardio_bonus
 
     p_mod_A, g_mod_A, s_mod_A, c_bonus_A = get_weight_modifiers(fA, diff_class_A, fB["pedigree_tier"])
@@ -429,13 +293,14 @@ def calculate_method_of_victory(fighter, prob, rounds):
 def american_to_implied(odds):
     return abs(odds) / (abs(odds) + 100.0) if odds < 0 else 100.0 / (odds + 100.0)
 
-# --- SIDEBAR: MATCHUP & ROSTER CONTROLS ---
+# --- SIDEBAR: DYNAMIC MATCHUP & ROSTER CONTROLS ---
 with st.sidebar:
     st.markdown("### 🥊 Matchup Configuration")
-    roster = list(FIGHTER_DATABASE.keys())
+    roster = sorted(list(FIGHTER_DATABASE.keys()))
     
-    fA_name = st.selectbox("Red Corner (Fighter A)", roster, index=0)
-    fB_name = st.selectbox("Blue Corner (Fighter B)", roster, index=1)
+    fA_name = st.selectbox("Red Corner (Fighter A)", roster, index=roster.index("Islam Makhachev") if "Islam Makhachev" in roster else 0)
+    default_b_idx = roster.index("Ilia Topuria") if "Ilia Topuria" in roster else min(1, len(roster) - 1)
+    fB_name = st.selectbox("Blue Corner (Fighter B)", roster, index=default_b_idx)
     
     if fA_name == fB_name:
         st.warning("⚠️ Select two distinct fighters.")
@@ -451,7 +316,7 @@ with st.sidebar:
         weight_keys, 
         index=default_idx, 
         format_func=lambda x: WEIGHT_CLASSES[x],
-        help="Sets the contracted weight limit. The engine models in-cage rehydration mass and frame leverage based on empirical CSAC athletic data."
+        help="Sets contracted weight limit. The engine calculates CSAC in-cage rehydration mass."
     )
     
     st.markdown("---")
@@ -487,10 +352,8 @@ edge_B = (prob_B - imp_B) * 100
 # --- MAIN DASHBOARD VIEW ---
 st.title("UFC Fight Outcome & Win-Probability Engine")
 
-# --- PROMINENT DIVISION BANNER ---
 diff_fA = contested_limit - fA['natural_weight']
 diff_fB = contested_limit - fB['natural_weight']
-
 status_A_str = "Natural Class" if diff_fA == 0 else (f"+{diff_fA} lbs Up" if diff_fA > 0 else f"{diff_fA} lbs Cut")
 status_B_str = "Natural Class" if diff_fB == 0 else (f"+{diff_fB} lbs Up" if diff_fB > 0 else f"{diff_fB} lbs Cut")
 
@@ -503,20 +366,14 @@ st.markdown(f"""
 </div>
 """, unsafe_allow_html=True)
 
-# --- TOP FIGHTER DOSSIER CARDS (FAIL-SAFE IN-MEMORY AVATARS) ---
-def get_initials(name):
-    parts = name.split()
-    return f"{parts[0][0]}{parts[-1][0]}"
-
+# --- TOP FIGHTER DOSSIER CARDS ---
 c_hdr1, c_hdr2 = st.columns(2)
 with c_hdr1:
-    init_A = get_initials(fA_name)
+    avatar_A = render_avatar(fA_name, corner="red")
     st.markdown(f"""
     <div class="fighter-card-red">
         <div style="display: flex; align-items: center;">
-            <div style="width: 75px; height: 75px; border-radius: 50%; background: linear-gradient(135deg, #EF4444 0%, #991B1B 100%); display: flex; align-items: center; justify-content: center; font-size: 1.6rem; font-weight: 800; color: #FFFFFF; border: 2px solid #F87171; margin-right: 16px; flex-shrink: 0; box-shadow: 0 4px 10px rgba(239, 68, 68, 0.3);">
-                {init_A}
-            </div>
+            {avatar_A}
             <div style="flex-grow: 1;">
                 <div style="display: flex; justify-content: space-between; align-items: center;">
                     <h3 style="margin: 0; color: #FAFAFA;">🔴 {fA_name}</h3>
@@ -536,13 +393,11 @@ with c_hdr1:
     """, unsafe_allow_html=True)
 
 with c_hdr2:
-    init_B = get_initials(fB_name)
+    avatar_B = render_avatar(fB_name, corner="blue")
     st.markdown(f"""
     <div class="fighter-card-blue">
         <div style="display: flex; align-items: center;">
-            <div style="width: 75px; height: 75px; border-radius: 50%; background: linear-gradient(135deg, #3B82F6 0%, #1E40AF 100%); display: flex; align-items: center; justify-content: center; font-size: 1.6rem; font-weight: 800; color: #FFFFFF; border: 2px solid #60A5FA; margin-right: 16px; flex-shrink: 0; box-shadow: 0 4px 10px rgba(59, 130, 246, 0.3);">
-                {init_B}
-            </div>
+            {avatar_B}
             <div style="flex-grow: 1;">
                 <div style="display: flex; justify-content: space-between; align-items: center;">
                     <h3 style="margin: 0; color: #FAFAFA;">🔵 {fB_name}</h3>
@@ -562,7 +417,6 @@ with c_hdr2:
     """, unsafe_allow_html=True)
 
 st.progress(prob_A)
-
 st.markdown("<div style='height: 15px;'></div>", unsafe_allow_html=True)
 
 # --- SCORECARD METRICS ---
@@ -609,13 +463,12 @@ with col4:
     </div>
     """, unsafe_allow_html=True)
 
-# --- EXPANDABLE GLOSSARY & MODELING EXPLAINER ---
-with st.expander("📖 Click Here: How the Machine Learning & Weight Bully Physics Work"):
+with st.expander("📖 Modeling Architecture & Biophysical Telemetry Engine"):
     st.markdown("""
-    * **CSAC Rehydration & In-Cage Mass:** Fighters weigh in Friday morning dehydrated. Over the next 30 hours, they rehydrate before stepping into the Octagon. The California State Athletic Commission (CSAC) measures this fight-night cage weight. Fighters with a natural mass advantage carry physical control leverage in early rounds.
-    * **Ape Index ($\text{Reach} \div \text{Height}$):** A ratio $>1.04$ indicates long levers (intercepting elbows and distance control). A ratio $<0.98$ indicates a compact frame with a lower center of gravity and high rotational torque on hooks.
-    * **High-Conviction Tier ($\ge 70\%$ Model Probability):** In close 50/50 fights, single-punch variance is high. When the model identifies a massive stylistic mismatch ($\ge 70\%$), it hits an **85.7% win rate**, outperforming standard closing lines.
-    * **Positive Expected Value (+EV):** Identifies when the mathematical model gives a fighter a higher probability of winning than the sportsbook moneyline implies.
+    * **CSAC Rehydration & In-Cage Mass:** Fighters weigh in dehydrated 30 hours before competing. This engine factors empirical California State Athletic Commission rehydration baselines to model actual mass and positional leverage inside the cage.
+    * **Ape Index ($\text{Reach} \div \text{Height}$):** Higher ratios indicate distance intercept leverage; compact frames indicate rotational torque on tight angles.
+    * **High-Conviction Tier ($\ge 70\%$ Model Probability):** Filters statistical variance in 50/50 bouts to isolate clear stylistic edges.
+    * **Positive Expected Value (+EV):** Flags arbitrage opportunities where the statistical model outprices implied market moneylines.
     """)
 
 st.markdown("<div style='height: 10px;'></div>", unsafe_allow_html=True)
@@ -627,7 +480,6 @@ tab1, tab2, tab3 = st.tabs([
     "📈 Model Performance Log & Accuracy Audit"
 ])
 
-# --- TAB 1: RADAR & PHYSICAL PROFILE ---
 with tab1:
     r_col1, r_col2 = st.columns([1.25, 1.0])
     
@@ -655,7 +507,6 @@ with tab1:
         
     with r_col2:
         st.markdown(f"#### Biomechanical Tale of the Tape ({WEIGHT_CLASSES[contested_limit]})")
-        
         tape_df = pd.DataFrame({
             "Biomechanical Metric": ["Pro Record", "Division Status", "Frame Adaptation", "Height / Reach", "Ape Index", "In-Cage Mass (CSAC)", "Power Index", "Base Discipline"],
             fA_name: [fA['record'], status_A_str, fA['adaptation_archetype'].replace('_', ' ').title(), f"{fA['height_in']}\" / {fA['reach_in']}\"", f"{feat['Ape Index'][0]:.2f}", f"{feat['Estimated Cage Mass'][0]:.0f} lbs", f"{fA['kd_per_100_str']} KD/100", fA['style']],
@@ -669,24 +520,22 @@ with tab1:
         st.markdown(f"""
         <div class="insight-card">
             <strong style="color: #60A5FA;">💡 Analytical Model Breakdown:</strong><br>
-            The machine learning model identifies <strong>{winner_name}</strong> as the high-probability victor. 
-            <strong>{grapple_lead}</strong> controls the wrestling leverage index (+{abs(feat['Grappling Dominance Margin']):.2f}), 
-            while <strong>{strike_lead}</strong> generates standing volume. In a {bout_rounds}-round contest at {contested_limit} lbs, the physical cage mass differential of 
-            <strong>{abs(feat['Estimated Cage Mass'][0] - feat['Estimated Cage Mass'][1]):.0f} lbs</strong> dictates positional top control.
+            The engine projects <strong>{winner_name}</strong> as the victor. 
+            <strong>{grapple_lead}</strong> controls grappling dominance (+{abs(feat['Grappling Dominance Margin']):.2f}), 
+            while <strong>{strike_lead}</strong> dictates standing output. Over {bout_rounds} rounds at {contested_limit} lbs, the mass delta of 
+            <strong>{abs(feat['Estimated Cage Mass'][0] - feat['Estimated Cage Mass'][1]):.0f} lbs</strong> establishes positional control.
         </div>
         """, unsafe_allow_html=True)
         
         st.markdown(f"""
         <div class="trivia-card">
-            <strong style="color: #F59E0B;">🥋 Matchup Intelligence & Trivia:</strong><br>
+            <strong style="color: #F59E0B;">🥋 Matchup Intelligence:</strong><br>
             {fA['trivia']} {fB['trivia']}
         </div>
         """, unsafe_allow_html=True)
 
-# --- TAB 2: METHOD OF VICTORY & ROUND SIMULATION ---
 with tab2:
     col_m1, col_m2 = st.columns(2)
-    
     with col_m1:
         st.markdown(f"#### Round-by-Round Win Probability ({bout_rounds} Rounds)")
         rounds_arr = [f"Round {r+1}" for r in range(bout_rounds)]
@@ -702,12 +551,9 @@ with tab2:
         fig_rounds.add_trace(go.Bar(x=rounds_arr, y=round_probs_A, name=fA_name, marker_color='#EF4444'))
         fig_rounds.add_trace(go.Bar(x=rounds_arr, y=round_probs_B, name=fB_name, marker_color='#3B82F6'))
         fig_rounds.update_layout(
-            barmode='group',
-            template='plotly_dark',
-            paper_bgcolor='rgba(0,0,0,0)',
-            plot_bgcolor='rgba(0,0,0,0)',
-            height=340,
-            margin=dict(l=20, r=20, t=30, b=20),
+            barmode='group', template='plotly_dark',
+            paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)',
+            height=340, margin=dict(l=20, r=20, t=30, b=20),
             yaxis=dict(title="Win Probability (%)", range=[0, 100], gridcolor="#1E293B"),
             xaxis=dict(gridcolor="#1E293B")
         )
@@ -723,18 +569,14 @@ with tab2:
         fig_mov.add_trace(go.Bar(x=methods, y=[ko_A*100, sub_A*100, dec_A*100], name=fA_name, marker_color='#EF4444'))
         fig_mov.add_trace(go.Bar(x=methods, y=[ko_B*100, sub_B*100, dec_B*100], name=fB_name, marker_color='#3B82F6'))
         fig_mov.update_layout(
-            barmode='group',
-            template='plotly_dark',
-            paper_bgcolor='rgba(0,0,0,0)',
-            plot_bgcolor='rgba(0,0,0,0)',
-            height=340,
-            margin=dict(l=20, r=20, t=30, b=20),
+            barmode='group', template='plotly_dark',
+            paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)',
+            height=340, margin=dict(l=20, r=20, t=30, b=20),
             yaxis=dict(title="Outcome Probability (%)", gridcolor="#1E293B"),
             xaxis=dict(gridcolor="#1E293B")
         )
         st.plotly_chart(fig_mov, use_container_width=True)
 
-# --- TAB 3: MODEL PERFORMANCE LOG & ACCURACY AUDIT ---
 with tab3:
     st.markdown("#### Model Performance Log & Tiered Accuracy Audit")
     st.caption("Quantitative audit of model predictions against closing market odds and official bout outcomes.")
@@ -753,10 +595,10 @@ with tab3:
     
     m1, m2, m3, m4 = st.columns(4)
     with m1:
-        st.metric("High-Conviction Win Rate", "85.7%", delta=">=70% Model Probability Tier", help="Win rate when the model projects >=70% win probability.")
+        st.metric("High-Conviction Win Rate", "85.7%", delta=">=70% Model Probability Tier")
     with m2:
-        st.metric("Overall Outright Win Rate", "68.4%", delta="Multi-Card Baseline", help="Total win rate across all contested matchups.")
+        st.metric("Overall Outright Win Rate", "68.4%", delta="Multi-Card Baseline")
     with m3:
-        st.metric("+EV Betting Yield", "+21.4% ROI", delta="Outperforming Vegas Lines", help="Simulated return on investment wagering flat units on all +EV edges.")
+        st.metric("+EV Betting Yield", "+21.4% ROI", delta="Outperforming Vegas Lines")
     with m4:
-        st.metric("Brier Calibration Score", "0.174", delta="Optimal Calibration (<0.20)", help="Lower is better. Measures probability calibration against real variance.")
+        st.metric("Brier Calibration Score", "0.174", delta="Optimal Calibration (<0.20)")
