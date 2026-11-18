@@ -1,5 +1,5 @@
 import base64
-import re
+import textwrap
 from pathlib import Path
 import streamlit as st
 import pandas as pd
@@ -122,6 +122,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 WEIGHT_CLASSES = {
+    125: "Flyweight Division (125 lbs)",
     135: "Bantamweight Division (135 lbs)",
     145: "Featherweight Division (145 lbs)",
     155: "Lightweight Division (155 lbs)",
@@ -136,7 +137,6 @@ WEIGHT_CLASSES = {
 def load_fighter_dataset() -> dict:
     parquet_path = Path("data/fighters_master.parquet")
     if not parquet_path.exists():
-        # Lazy fallback execution if parquet isn't built yet
         from etl_pipeline import build_roster_database
         build_roster_database()
         
@@ -166,14 +166,7 @@ def render_avatar(name: str, corner: str = "red") -> str:
     border = "#F87171" if corner == "red" else "#60A5FA"
     shadow = "rgba(239, 68, 68, 0.3)" if corner == "red" else "rgba(59, 130, 246, 0.3)"
     
-    return f"""
-    <div style="width: 75px; height: 75px; border-radius: 50%; background: {bg}; 
-                display: flex; align-items: center; justify-content: center; font-size: 1.5rem; 
-                font-weight: 800; color: #FFFFFF; border: 2px solid {border}; 
-                margin-right: 16px; flex-shrink: 0; box-shadow: 0 4px 10px {shadow};">
-        {initials}
-    </div>
-    """
+    return f'<div style="width: 75px; height: 75px; border-radius: 50%; background: {bg}; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; font-weight: 800; color: #FFFFFF; border: 2px solid {border}; margin-right: 16px; flex-shrink: 0; box-shadow: 0 4px 10px {shadow};">{initials}</div>'
 
 # --- BIOMECHANICAL & PROBABILISTIC FEATURE ENGINE ---
 def compute_in_cage_mass(fighter, contested_limit):
@@ -293,14 +286,29 @@ def calculate_method_of_victory(fighter, prob, rounds):
 def american_to_implied(odds):
     return abs(odds) / (abs(odds) + 100.0) if odds < 0 else 100.0 / (odds + 100.0)
 
-# --- SIDEBAR: DYNAMIC MATCHUP & ROSTER CONTROLS ---
+# --- SIDEBAR: DYNAMIC CONTENDER SELECTORS ---
 with st.sidebar:
     st.markdown("### 🥊 Matchup Configuration")
-    roster = sorted(list(FIGHTER_DATABASE.keys()))
     
-    fA_name = st.selectbox("Red Corner (Fighter A)", roster, index=roster.index("Islam Makhachev") if "Islam Makhachev" in roster else 0)
-    default_b_idx = roster.index("Ilia Topuria") if "Ilia Topuria" in roster else min(1, len(roster) - 1)
-    fB_name = st.selectbox("Blue Corner (Fighter B)", roster, index=default_b_idx)
+    divisions = ["All Divisions"] + sorted(list(set(f["division"] for f in FIGHTER_DATABASE.values() if "division" in f)))
+    selected_div = st.selectbox("Filter Roster by Division", divisions, index=0)
+    
+    if selected_div == "All Divisions":
+        filtered_roster = sorted(list(FIGHTER_DATABASE.keys()))
+    else:
+        filtered_roster = sorted([k for k, v in FIGHTER_DATABASE.items() if v.get("division") == selected_div])
+        
+    def format_fighter_label(name):
+        f = FIGHTER_DATABASE.get(name, {})
+        rank = f.get("rank", "")
+        div = f.get("division", "")
+        return f"{name} ({div} {rank})" if rank else name
+
+    default_a_idx = filtered_roster.index("Islam Makhachev") if "Islam Makhachev" in filtered_roster else 0
+    fA_name = st.selectbox("Red Corner (Fighter A)", filtered_roster, index=default_a_idx, format_func=format_fighter_label)
+    
+    default_b_idx = filtered_roster.index("Arman Tsarukyan") if "Arman Tsarukyan" in filtered_roster else min(1, len(filtered_roster) - 1)
+    fB_name = st.selectbox("Blue Corner (Fighter B)", filtered_roster, index=default_b_idx, format_func=format_fighter_label)
     
     if fA_name == fB_name:
         st.warning("⚠️ Select two distinct fighters.")
@@ -309,7 +317,7 @@ with st.sidebar:
     st.markdown("### ⚖️ Select Contested Division")
     default_weight = FIGHTER_DATABASE[fA_name]["natural_weight"]
     weight_keys = list(WEIGHT_CLASSES.keys())
-    default_idx = weight_keys.index(default_weight) if default_weight in weight_keys else 2
+    default_idx = weight_keys.index(default_weight) if default_weight in weight_keys else 3
     
     contested_limit = st.selectbox(
         "Bout Weight Class", 
@@ -357,20 +365,22 @@ diff_fB = contested_limit - fB['natural_weight']
 status_A_str = "Natural Class" if diff_fA == 0 else (f"+{diff_fA} lbs Up" if diff_fA > 0 else f"{diff_fA} lbs Cut")
 status_B_str = "Natural Class" if diff_fB == 0 else (f"+{diff_fB} lbs Up" if diff_fB > 0 else f"{diff_fB} lbs Cut")
 
-st.markdown(f"""
+division_banner_html = textwrap.dedent(f"""
 <div class="division-banner">
     <div class="division-title">⚖️ CONTESTED DIVISION: {WEIGHT_CLASSES[contested_limit].upper()}</div>
     <div style="color: #94A3B8; font-size: 0.85rem; margin-top: 4px;">
         🔴 <strong>{fA_name}</strong> ({status_A_str}) &nbsp;|&nbsp; 🔵 <strong>{fB_name}</strong> ({status_B_str}) &nbsp;|&nbsp; <strong>{bout_rounds}-Round Bout Structure</strong>
     </div>
 </div>
-""", unsafe_allow_html=True)
+""")
+st.markdown(division_banner_html, unsafe_allow_html=True)
 
 # --- TOP FIGHTER DOSSIER CARDS ---
 c_hdr1, c_hdr2 = st.columns(2)
+
 with c_hdr1:
     avatar_A = render_avatar(fA_name, corner="red")
-    st.markdown(f"""
+    card_html_A = textwrap.dedent(f"""
     <div class="fighter-card-red">
         <div style="display: flex; align-items: center;">
             {avatar_A}
@@ -390,11 +400,12 @@ with c_hdr1:
             </div>
         </div>
     </div>
-    """, unsafe_allow_html=True)
+    """)
+    st.markdown(card_html_A, unsafe_allow_html=True)
 
 with c_hdr2:
     avatar_B = render_avatar(fB_name, corner="blue")
-    st.markdown(f"""
+    card_html_B = textwrap.dedent(f"""
     <div class="fighter-card-blue">
         <div style="display: flex; align-items: center;">
             {avatar_B}
@@ -414,7 +425,8 @@ with c_hdr2:
             </div>
         </div>
     </div>
-    """, unsafe_allow_html=True)
+    """)
+    st.markdown(card_html_B, unsafe_allow_html=True)
 
 st.progress(prob_A)
 st.markdown("<div style='height: 15px;'></div>", unsafe_allow_html=True)
@@ -425,43 +437,47 @@ winner_name = fA_name if prob_A > prob_B else fB_name
 win_conf = max(prob_A, prob_B) * 100
 
 with col1:
-    st.markdown(f"""
+    m_html_1 = textwrap.dedent(f"""
     <div class="metric-card">
         <div class="metric-title">Projected Winner</div>
         <div class="metric-value">{winner_name.split()[-1]}</div>
         <div style="color: #22C55E; font-size: 0.82rem; font-weight: 600;">{win_conf:.1f}% Confidence</div>
     </div>
-    """, unsafe_allow_html=True)
+    """)
+    st.markdown(m_html_1, unsafe_allow_html=True)
 
 with col2:
-    st.markdown(f"""
+    m_html_2 = textwrap.dedent(f"""
     <div class="metric-card">
         <div class="metric-title">Ape Index (Leverage)</div>
         <div class="metric-value">{feat['Ape Index'][0]:.2f} vs {feat['Ape Index'][1]:.2f}</div>
         <div style="color: #94A3B8; font-size: 0.82rem;">Reach ÷ Height Ratio</div>
     </div>
-    """, unsafe_allow_html=True)
+    """)
+    st.markdown(m_html_2, unsafe_allow_html=True)
 
 with col3:
-    st.markdown(f"""
+    m_html_3 = textwrap.dedent(f"""
     <div class="metric-card">
         <div class="metric-title">In-Cage Mass @ {contested_limit} lbs</div>
         <div class="metric-value">{feat['Estimated Cage Mass'][0]:.0f} vs {feat['Estimated Cage Mass'][1]:.0f} lbs</div>
         <div style="color: #94A3B8; font-size: 0.82rem;">Empirical CSAC Fight Night Mass</div>
     </div>
-    """, unsafe_allow_html=True)
+    """)
+    st.markdown(m_html_3, unsafe_allow_html=True)
 
 with col4:
     best_ev_fighter = fA_name if edge_A > edge_B else fB_name
     best_ev_val = max(edge_A, edge_B)
     edge_color = "#22C55E" if best_ev_val > 0 else "#EF4444"
-    st.markdown(f"""
+    m_html_4 = textwrap.dedent(f"""
     <div class="metric-card">
         <div class="metric-title">Market Edge (+EV)</div>
         <div class="metric-value">{best_ev_fighter.split()[-1]}</div>
         <div style="color: {edge_color}; font-size: 0.82rem; font-weight: 600;">{best_ev_val:+.1f}% vs Vegas Odds</div>
     </div>
-    """, unsafe_allow_html=True)
+    """)
+    st.markdown(m_html_4, unsafe_allow_html=True)
 
 with st.expander("📖 Modeling Architecture & Biophysical Telemetry Engine"):
     st.markdown("""
@@ -517,7 +533,7 @@ with tab1:
         grapple_lead = fA_name if feat['Grappling Dominance Margin'] > 0 else fB_name
         strike_lead = fA_name if feat['Net Striking Differential'] > 0 else fB_name
         
-        st.markdown(f"""
+        insight_html = textwrap.dedent(f"""
         <div class="insight-card">
             <strong style="color: #60A5FA;">💡 Analytical Model Breakdown:</strong><br>
             The engine projects <strong>{winner_name}</strong> as the victor. 
@@ -525,14 +541,16 @@ with tab1:
             while <strong>{strike_lead}</strong> dictates standing output. Over {bout_rounds} rounds at {contested_limit} lbs, the mass delta of 
             <strong>{abs(feat['Estimated Cage Mass'][0] - feat['Estimated Cage Mass'][1]):.0f} lbs</strong> establishes positional control.
         </div>
-        """, unsafe_allow_html=True)
+        """)
+        st.markdown(insight_html, unsafe_allow_html=True)
         
-        st.markdown(f"""
+        trivia_html = textwrap.dedent(f"""
         <div class="trivia-card">
             <strong style="color: #F59E0B;">🥋 Matchup Intelligence:</strong><br>
             {fA['trivia']} {fB['trivia']}
         </div>
-        """, unsafe_allow_html=True)
+        """)
+        st.markdown(trivia_html, unsafe_allow_html=True)
 
 with tab2:
     col_m1, col_m2 = st.columns(2)
