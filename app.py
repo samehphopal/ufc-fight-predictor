@@ -6,6 +6,8 @@ import pandas as pd
 import numpy as np
 import plotly.graph_objects as go
 
+
+
 # --- PAGE CONFIGURATION ---
 st.set_page_config(
     page_title="UFC Fight Outcome & Win-Probability Engine",
@@ -14,8 +16,16 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
+
 # --- MODERN DARK EXECUTIVE THEME ---
 st.markdown("""
+div[data-baseweb="select"] input {
+        caret-color: transparent !important;
+        cursor: pointer !important;
+    }
+    div[data-baseweb="select"] > div {
+        cursor: pointer !important;
+    }
 <style>
     .main {
         background-color: #0E1117;
@@ -143,7 +153,7 @@ def load_fighter_dataset() -> dict:
     df = pd.read_parquet(parquet_path)
     
     def cache_base64(path_str):
-        if path_str and Path(path_str).exists():
+        if isinstance(path_str, str) and path_str.strip() and Path(path_str).exists():
             return base64.b64encode(Path(path_str).read_bytes()).decode("utf-8")
         return None
         
