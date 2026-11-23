@@ -3,5 +3,4 @@ pandas
 numpy
 plotly
 pyarrow
-scikit-learn
-xgboost
+requests

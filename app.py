@@ -6,7 +6,7 @@ import pandas as pd
 import numpy as np
 import plotly.graph_objects as go
 
-
+BASE_DIR = Path(__file__).resolve().parent
 
 # --- PAGE CONFIGURATION ---
 st.set_page_config(
@@ -16,17 +16,16 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-
 # --- MODERN DARK EXECUTIVE THEME ---
 st.markdown("""
-div[data-baseweb="select"] input {
+<style>
+    div[data-baseweb="select"] input {
         caret-color: transparent !important;
         cursor: pointer !important;
     }
     div[data-baseweb="select"] > div {
         cursor: pointer !important;
     }
-<style>
     .main {
         background-color: #0E1117;
         color: #FAFAFA;
@@ -66,9 +65,12 @@ div[data-baseweb="select"] input {
     }
     .metric-value {
         color: #FFFFFF;
-        font-size: 1.55rem;
+        font-size: 1.35rem;
         font-weight: 700;
-        line-height: 1.2;
+        line-height: 1.25;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
     .fighter-card-red {
         background: linear-gradient(135deg, rgba(239, 68, 68, 0.15) 0%, rgba(30, 34, 45, 0.9) 100%);
@@ -89,6 +91,7 @@ div[data-baseweb="select"] input {
         height: 75px;
         border-radius: 50%;
         object-fit: cover;
+        object-position: top center;
         background-color: #1E293B;
         border: 2px solid #475569;
         margin-right: 16px;
@@ -102,6 +105,7 @@ div[data-baseweb="select"] input {
         font-size: 0.8rem;
         font-weight: 600;
         margin-right: 6px;
+        margin-top: 4px;
     }
     .tag-red { background: rgba(239, 68, 68, 0.25); color: #F87171; border: 1px solid #EF4444; }
     .tag-blue { background: rgba(59, 130, 246, 0.25); color: #60A5FA; border: 1px solid #3B82F6; }
@@ -145,7 +149,7 @@ WEIGHT_CLASSES = {
 # --- DYNAMIC DATA PIPELINE WITH CACHED PARQUET ---
 @st.cache_data(ttl="6h", show_spinner=False)
 def load_fighter_dataset() -> dict:
-    parquet_path = Path("data/fighters_master.parquet")
+    parquet_path = BASE_DIR / "data" / "fighters_master.parquet"
     if not parquet_path.exists():
         from etl_pipeline import build_roster_database
         build_roster_database()
@@ -153,8 +157,10 @@ def load_fighter_dataset() -> dict:
     df = pd.read_parquet(parquet_path)
     
     def cache_base64(path_str):
-        if isinstance(path_str, str) and path_str.strip() and Path(path_str).exists():
-            return base64.b64encode(Path(path_str).read_bytes()).decode("utf-8")
+        if isinstance(path_str, str) and path_str.strip():
+            clean_path = BASE_DIR / path_str.replace("\\", "/").lstrip("/")
+            if clean_path.is_file():
+                return base64.b64encode(clean_path.read_bytes()).decode("utf-8")
         return None
         
     df["img_b64"] = df["local_image_path"].apply(cache_base64)
@@ -272,7 +278,7 @@ def compute_matchup_model(fA, fB, contested_limit, rounds=3, short_notice_A=Fals
         (age_gap / 7.5) * 0.20
     )
     
-    prob_A = 1.0 / (1.0 + np.exp(-matchup_score))
+    prob_A = float(1.0 / (1.0 + np.exp(-matchup_score)))
     prob_B = 1.0 - prob_A
     
     features = {
@@ -339,7 +345,7 @@ with st.sidebar:
     
     st.markdown("---")
     st.markdown("### ⚙️ Bout Format & Camp Context")
-    bout_rounds = st.radio("Bout Structure", [3, 5], index=1, format_func=lambda x: f"{x}-Round Championship / Main Event" if x==5 else "3-Round Standard Bout")
+    bout_rounds = st.radio("Bout Structure", [3, 5], index=1, format_func=lambda x: f"{x}-Round Championship / Main Event" if x == 5 else "3-Round Standard Bout")
     
     col_c1, col_c2 = st.columns(2)
     with col_c1:
@@ -395,9 +401,9 @@ with c_hdr1:
         <div style="display: flex; align-items: center;">
             {avatar_A}
             <div style="flex-grow: 1;">
-                <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div style="display: flex; justify-content: space-between; align-items: center; gap: 8px;">
                     <h3 style="margin: 0; color: #FAFAFA;">🔴 {fA_name}</h3>
-                    <span style="color: #94A3B8; font-weight: 700;">{fA['record']}</span>
+                    <span style="color: #94A3B8; font-weight: 700; white-space: nowrap;">{fA['record']}</span>
                 </div>
                 <div style="color: #CBD5E1; font-size: 0.85rem; margin-top: 2px; margin-bottom: 8px;">
                     {fA['style']} • Natural: {fA['natural_weight']} lbs
@@ -420,9 +426,9 @@ with c_hdr2:
         <div style="display: flex; align-items: center;">
             {avatar_B}
             <div style="flex-grow: 1;">
-                <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div style="display: flex; justify-content: space-between; align-items: center; gap: 8px;">
                     <h3 style="margin: 0; color: #FAFAFA;">🔵 {fB_name}</h3>
-                    <span style="color: #94A3B8; font-weight: 700;">{fB['record']}</span>
+                    <span style="color: #94A3B8; font-weight: 700; white-space: nowrap;">{fB['record']}</span>
                 </div>
                 <div style="color: #CBD5E1; font-size: 0.85rem; margin-top: 2px; margin-bottom: 8px;">
                     {fB['style']} • Natural: {fB['natural_weight']} lbs
@@ -438,7 +444,7 @@ with c_hdr2:
     """)
     st.markdown(card_html_B, unsafe_allow_html=True)
 
-st.progress(prob_A)
+st.progress(float(np.clip(prob_A, 0.0, 1.0)))
 st.markdown("<div style='height: 15px;'></div>", unsafe_allow_html=True)
 
 # --- SCORECARD METRICS ---
@@ -490,11 +496,11 @@ with col4:
     st.markdown(m_html_4, unsafe_allow_html=True)
 
 with st.expander("📖 Modeling Architecture & Biophysical Telemetry Engine"):
-    st.markdown("""
-    * **CSAC Rehydration & In-Cage Mass:** Fighters weigh in dehydrated 30 hours before competing. This engine factors empirical California State Athletic Commission rehydration baselines to model actual mass and positional leverage inside the cage.
-    * **Ape Index ($\text{Reach} \div \text{Height}$):** Higher ratios indicate distance intercept leverage; compact frames indicate rotational torque on tight angles.
-    * **High-Conviction Tier ($\ge 70\%$ Model Probability):** Filters statistical variance in 50/50 bouts to isolate clear stylistic edges.
-    * **Positive Expected Value (+EV):** Flags arbitrage opportunities where the statistical model outprices implied market moneylines.
+    st.markdown(r"""
+- **CSAC Rehydration & In-Cage Mass:** Fighters weigh in dehydrated 30 hours before competing. This engine factors empirical California State Athletic Commission rehydration baselines to model actual mass and positional leverage inside the cage.
+- **Ape Index ($\text{Reach} \div \text{Height}$):** Higher ratios indicate distance intercept leverage; compact frames indicate rotational torque on tight angles.
+- **High-Conviction Tier ($\ge 70\%$ Model Probability):** Filters statistical variance in 50/50 bouts to isolate clear stylistic edges.
+- **Positive Expected Value (+EV):** Flags arbitrage opportunities where the statistical model outprices implied market moneylines.
     """)
 
 st.markdown("<div style='height: 10px;'></div>", unsafe_allow_html=True)
@@ -529,7 +535,7 @@ with tab1:
             margin=dict(l=30, r=30, t=20, b=20),
             legend=dict(orientation="h", yanchor="bottom", y=1.05, xanchor="center", x=0.5)
         )
-        st.plotly_chart(fig_r, use_container_width=True)
+        st.plotly_chart(fig_r, width="stretch")
         
     with r_col2:
         st.markdown(f"#### Biomechanical Tale of the Tape ({WEIGHT_CLASSES[contested_limit]})")
@@ -538,7 +544,7 @@ with tab1:
             fA_name: [fA['record'], status_A_str, fA['adaptation_archetype'].replace('_', ' ').title(), f"{fA['height_in']}\" / {fA['reach_in']}\"", f"{feat['Ape Index'][0]:.2f}", f"{feat['Estimated Cage Mass'][0]:.0f} lbs", f"{fA['kd_per_100_str']} KD/100", fA['style']],
             fB_name: [fB['record'], status_B_str, fB['adaptation_archetype'].replace('_', ' ').title(), f"{fB['height_in']}\" / {fB['reach_in']}\"", f"{feat['Ape Index'][1]:.2f}", f"{feat['Estimated Cage Mass'][1]:.0f} lbs", f"{fB['kd_per_100_str']} KD/100", fB['style']]
         })
-        st.dataframe(tape_df, use_container_width=True, hide_index=True)
+        st.dataframe(tape_df, width="stretch", hide_index=True)
         
         grapple_lead = fA_name if feat['Grappling Dominance Margin'] > 0 else fB_name
         strike_lead = fA_name if feat['Net Striking Differential'] > 0 else fB_name
@@ -585,7 +591,7 @@ with tab2:
             yaxis=dict(title="Win Probability (%)", range=[0, 100], gridcolor="#1E293B"),
             xaxis=dict(gridcolor="#1E293B")
         )
-        st.plotly_chart(fig_rounds, use_container_width=True)
+        st.plotly_chart(fig_rounds, width="stretch")
         
     with col_m2:
         st.markdown("#### Method of Victory Distribution")
@@ -603,7 +609,7 @@ with tab2:
             yaxis=dict(title="Outcome Probability (%)", gridcolor="#1E293B"),
             xaxis=dict(gridcolor="#1E293B")
         )
-        st.plotly_chart(fig_mov, use_container_width=True)
+        st.plotly_chart(fig_mov, width="stretch")
 
 with tab3:
     st.markdown("#### Model Performance Log & Tiered Accuracy Audit")
@@ -619,7 +625,7 @@ with tab3:
     ]
     
     df_log = pd.DataFrame(log_data)
-    st.dataframe(df_log, use_container_width=True, hide_index=True)
+    st.dataframe(df_log, width="stretch", hide_index=True)
     
     m1, m2, m3, m4 = st.columns(4)
     with m1:
