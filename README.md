@@ -4,12 +4,12 @@
 
 An interactive MMA matchup simulator and sports-analytics dashboard built with Python and Streamlit. It combines fighter performance stats, post-weigh-in fight-night weight modeling, and stylistic analysis to generate calibrated win probabilities and benchmark them against live sportsbook odds.
 
----
-
 ## Why I Built This
-Anyone who actually watches MMA knows stats lie on paper. Two fighters can weigh in at 155 lbs on Friday morning and step into the cage Saturday night 15 pounds apart. A sharp boxer's striking volume drops off a cliff the second they have to respect a takedown threat.
+Anyone who watches MMA closely knows box-score stats never tell the full story. Two fighters can both make 155 lbs on Friday morning, yet step into the cage Saturday night 15 pounds apart as a true weight bully takes over the grappling exchanges. A sharp technical striker with clean hands can look unbeatable on paper until a relentless wrestler forces them to lower their guard, or a dangerous finisher changes the fight with one clean shot.
 
-Most sports ML projects miss that completely—they scrape box scores, dump them into a black-box model, and hand you a raw percentage with zero context. I built this engine to translate real fight mechanics—post-weigh-in rehydration, stylistic suppression, frame leverage, and division aging curves—into calibrated win probabilities that show *how* a matchup gets won, then hold the model accountable against the hardest benchmark in the sport: closing sportsbook odds.
+Most sports models miss these dynamics completely. They feed flat career averages into a black box and output a win percentage with zero context. I built this engine to model the real variables that decide matchups: fight-night weight rehydration, frame leverage (Ape Index), finishing danger versus technical striking volume, stylistic clashes like boxer versus kicker or grappler versus striker, five-round cardio scaling, and division-specific aging curves. Every prediction breaks down the exact drivers behind a fighter's path to victory, enforces smart guardrails against unrealistic weight cuts, and gets audited against closing sportsbook odds using win rate, +EV ROI, and Brier calibration.
+
+This is just the first release. Future updates will incorporate additional calibration factors and variables to push accuracy even further, all while keeping the interface clean, intuitive, and visually sharp.
 
 ---
 
