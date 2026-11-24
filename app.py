@@ -335,7 +335,14 @@ def compute_matchup_model(fA, fB, contested_limit, rounds=3, short_notice_A=Fals
             else:
                 return 0.90, 0.80, 0.65, 0.96, -0.10, scaled_pen
         elif diff < 0:
-            return 0.90, 1.00, 1.00, 0.88, -0.35, -0.20
+            cut_lbs = abs(diff)
+            age_mult = 1.0 + max(0, fighter["age"] - 32) * 0.07
+            if cut_lbs >= 20:
+                scaled_pen = -min(3.5, (cut_lbs * 0.055) * age_mult)
+                return 0.72, 0.78, 0.75, 0.78, -0.85 * age_mult, scaled_pen
+            else:
+                scaled_pen = -(cut_lbs * 0.025) * age_mult
+                return 0.90, 0.96, 0.95, 0.90, -0.35 * age_mult, scaled_pen
         return 1.0, 1.0, 1.0, 1.0, 0.0, 0.0
 
     p_A, gdef_A, goff_A, s_A, c_A, move_pen_A = get_weight_modifiers(fA, diff_class_A)
@@ -582,6 +589,34 @@ st.markdown(textwrap.dedent(f"""
 </div>
 """), unsafe_allow_html=True)
 
+# --- WEIGHT-CUT FEASIBILITY GUARDRAILS ---
+cut_warnings = []
+for f_name, f_data in [(fA_name, fA), (fB_name, fB)]:
+    cut_lbs = f_data["natural_weight"] - contested_limit
+    jump_lbs = contested_limit - f_data["natural_weight"]
+    h_str = fmt_height(f_data["height_in"])
+
+    if cut_lbs >= 20:
+        cut_warnings.append(
+            f"<strong>Unrealistic Weight Cut ({f_name}):</strong> Dropping {cut_lbs} lbs below his natural {f_data['natural_weight']}-lb frame ({h_str}) to make {contested_limit} lbs is not realistically feasible—severe dehydration &amp; cardio penalties applied."
+        )
+    elif cut_lbs >= 10 and f_data["age"] >= 34:
+        cut_warnings.append(
+            f"<strong>Demanding Cut at Age {f_data['age']} ({f_name}):</strong> Cutting {cut_lbs} lbs below natural weight ({f_data['natural_weight']} lbs) late in his career carries heightened cardio and durability risk."
+        )
+    elif jump_lbs >= 30:
+        cut_warnings.append(
+            f"<strong>Extreme Size Disadvantage ({f_name}):</strong> Moving up +{jump_lbs} lbs above his natural {f_data['natural_weight']}-lb class creates a heavy strength and clinch deficit."
+        )
+
+if cut_warnings:
+    warn_items = "".join([f'<div style="margin-bottom: 4px;">⚠️ {w}</div>' for w in cut_warnings])
+    st.markdown(
+        f'<div style="background: rgba(245, 158, 11, 0.12); border: 1px solid rgba(245, 158, 11, 0.45); border-left: 4px solid #F59E0B; border-radius: 8px; padding: 12px 16px; margin-bottom: 16px; color: #FDE68A; font-size: 0.87rem; line-height: 1.5;">'
+        f'{warn_items}</div>',
+        unsafe_allow_html=True
+    )
+
 # --- FIGHTER CARDS ---
 c_hdr1, c_hdr2 = st.columns(2)
 
@@ -682,10 +717,10 @@ with col4:
 
 with st.expander("📖 How the Model Works (Plain English)"):
     st.markdown("""
-    - **Transparent Weighted Engine (Not a Black Box):** Instead of hiding predictions behind an opaque algorithm, this engine scores 6 core fight drivers—**Grappling, Striking & Defense, Fight-Night Weight, Reach/Frame, Cardio, and Prime Age Curve**—and shows exactly how much each factor swings the pick.
-    - **Fight-Night Weight (CSAC Data):** Official UFC weigh-ins happen ~30 hours before the fight. Using California State Athletic Commission (CSAC) fight-night weight data, fighters typically rehydrate 10%–15% heavier by cage time, which directly affects clinch and wrestling leverage.
-    - **Cross-Division Reality:** Fighters moving up above their natural weight class take a scaled size and takedown-leverage discount, balanced against "lighter man's skill" (speed, volume, and footwork).
-    - **Calibrated for MMA Variance:** A temperature-scaled logistic curve prevents overconfident 99% predictions in a sport where one clean shot in 4-oz gloves can end any fight.
+- **Transparent Weighted Engine (Not a Black Box):** Instead of hiding predictions behind an opaque algorithm, this engine scores 6 core fight drivers—**Grappling, Striking & Defense, Fight-Night Weight, Reach/Frame, Cardio, and Prime Age Curve**—and shows exactly how much each factor swings the pick.
+- **Fight-Night Weight (CSAC Data):** Official UFC weigh-ins happen ~30 hours before the fight. Using California State Athletic Commission (CSAC) fight-night weight data, fighters typically rehydrate 10%–15% heavier by cage time, which directly affects clinch and wrestling leverage.
+- **Cross-Division Reality:** Fighters moving up above their natural weight class take a scaled size and takedown-leverage discount, balanced against "lighter man's skill" (speed, volume, and footwork).
+- **Calibrated for MMA Variance:** A temperature-scaled logistic curve prevents overconfident 99% predictions in a sport where one clean shot in 4-oz gloves can end any fight.
     """)
 
 st.markdown("<div style='height: 10px;'></div>", unsafe_allow_html=True)
@@ -863,7 +898,6 @@ with tab3:
         {"Event": "UFC 297", "Matchup": "Sean Strickland vs Dricus Du Plessis", "Pick": "Strickland", "Prob": 0.54, "Vegas": -110, "Result": "Du Plessis (Dec)", "Won": False},
     ]
 
-    # Compute every metric dynamically so summary cards match the audit table 100%
     display_rows = []
     ev_profits = []
     brier_errors = []
