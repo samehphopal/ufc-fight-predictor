@@ -715,10 +715,10 @@ with col4:
     </div>
     """), unsafe_allow_html=True)
 
-with st.expander("📖 How the Model Works (Plain English)"):
+with st.expander("📖 How the Model Works"):
     st.markdown("""
-- **Transparent Weighted Engine (Not a Black Box):** Instead of hiding predictions behind an opaque algorithm, this engine scores 6 core fight drivers—**Grappling, Striking & Defense, Fight-Night Weight, Reach/Frame, Cardio, and Prime Age Curve**—and shows exactly how much each factor swings the pick.
-- **Fight-Night Weight (CSAC Data):** Official UFC weigh-ins happen ~30 hours before the fight. Using California State Athletic Commission (CSAC) fight-night weight data, fighters typically rehydrate 10%–15% heavier by cage time, which directly affects clinch and wrestling leverage.
+- **Transparent Weighted Engine (Not a Black Box):** Instead of hiding predictions behind an opaque algorithm, this engine scores 6 core fight drivers (**Grappling, Striking & Defense, Fight-Night Weight, Reach/Frame, Cardio, and Prime Age Curve**) and shows how much each factor swings the pick.
+- **Fight-Night Weight (CSAC Data):** Official UFC weigh-ins happen ~30 hours before the fight. Using California State Athletic Commission (CSAC) fight-night weight data, fighters typically rehydrate 10% to 15% heavier by cage time, which directly affects clinch and wrestling leverage.
 - **Cross-Division Reality:** Fighters moving up above their natural weight class take a scaled size and takedown-leverage discount, balanced against "lighter man's skill" (speed, volume, and footwork).
 - **Calibrated for MMA Variance:** A temperature-scaled logistic curve prevents overconfident 99% predictions in a sport where one clean shot in 4-oz gloves can end any fight.
     """)
