@@ -6,6 +6,13 @@ An interactive MMA matchup simulator and sports-analytics dashboard built with P
 
 ---
 
+## Why I Built This
+Anyone who actually watches MMA knows stats lie on paper. Two fighters can weigh in at 155 lbs on Friday morning and step into the cage Saturday night 15 pounds apart. A sharp boxer's striking volume drops off a cliff the second they have to respect a takedown threat.
+
+Most sports ML projects miss that completely—they scrape box scores, dump them into a black-box model, and hand you a raw percentage with zero context. I built this engine to translate real fight mechanics—post-weigh-in rehydration, stylistic suppression, frame leverage, and division aging curves—into calibrated win probabilities that show *how* a matchup gets won, then hold the model accountable against the hardest benchmark in the sport: closing sportsbook odds.
+
+---
+
 ## Key Features
 
 - **64-Fighter Ranked Roster:** Covers all 8 UFC men's divisions (`etl_pipeline.py` -> `data/fighters_master.parquet`) with official athlete portraits and division filtering.
